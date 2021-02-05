@@ -1,0 +1,23 @@
+
+//恶意程序检测
+https://github.com/hasherezade/pe-sieve
+https://github.com/rootm0s/Protectors
+
+
+
+PE ======================================================================================================================================================================================================
+//peloader
+https://github.com/nettitude/SimplePELoader
+
+
+//pe
+https://github.com/petoolse/petools  //无用
+
+https://github.com/trailofbits/pe-parse
+
+https://github.com/sporst/PeLib
+
+//pe 注入
+https://github.com/secrary/InfectPE
+https://github.com/BenjaminSoelberg/ReflectivePELoader
+======================================================================================================================================================================================================

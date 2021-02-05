@@ -1,0 +1,17 @@
+ 命令行方式设置windows系统环境变量
+
+Java安装完成后，需要设置系统环境变量，可以通过图形化的方式配置，右键单击我的电脑->属性->高级系统设置->高级->环境变量->系统变量->选择Path->编辑->新建，输入C:\Java\jdk1.8.0_171\bin，完成配置。
+
+第二种方式，通过命令行方式配置，Windows键+R->找到Windows系统->命令提示符->鼠标右键->更多->以管理员权限运行，输入以下命令，在当前环境变量中添加java环境：
+
+set JAVA_HOME=C:\Java\jdk1.8.0_171
+
+set path=%path%;%JAVA_HOME%\bin
+
+setx /m path "%path%;%JAVA_HOME%\bin"
+
+检验配置项：
+
+echo %JAVA_HOME%
+
+set命令，对于设置path，当前session有效，setx直接写注册表，全局有效（需要重启命令行窗口）。运行没有参数的set命令可以查询当前系统全部环境变量，运行path命令可以查询path变量
