@@ -1,0 +1,1 @@
+copy .\configs\_vimrc C:\Users\Administrator

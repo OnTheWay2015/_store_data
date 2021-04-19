@@ -1,0 +1,159 @@
+//https://my.oschina.net/u/1426828/blog/552383
+
+c++字符集之间转换(UTF-8,UNICODE,Gb2312)
+moki_oschina
+c/c++
+2015/12/28 16:37
+阅读数 7.9K
+UTF-8:   3字节一个字符
+
+UNICODE: 2字节一个字符
+
+GB2312:  1字节一个字符
+
+例子：
+“你”字的UTF-8编码: E4 BD A0　　　　　　　　11100100 10111101 10100000
+“你”的Unicode编码: 4F 60　　　　　　　　　   01001111 01100000
+
+按照UTF-8的编码规则，分解如下：xxxx0100 xx111101 xx100000,把除了x之外的数字拼接在一起，就变成“你”的Unicode编码了。
+注意UTF-8的最前面３个1，表示整个UTF-8串是由３个字节构成的。
+经过UTF-8编码之后，再也不会出现敏感字符了，因为最高位始终为1。
+
+
+UTF-8是Unicode的一种实现方式，也就是它的字节结构有特殊要求，所以我们说一个汉字的范围是0X4E00到0x9FA5，是指unicode值，
+至于放在utf-8的编码里去就是由三个字节来组织，所以可以看出unicode是给出一个字符的范围，定义了这个字是码值是多少，至于具体的实现方式可以有多种多样来实现。
+ 
+UTF-8是一种变长字节编码方式。对于某一个字符的UTF-8编码，如果只有一个字节则其最高二进制位为0；
+如果是多字节，其第一个字节从最高位开始，连续的二进制位值为1的个数决定了其编码的位数，其余各字节均以10开头。UTF-8最多可用到6个字节。 
+如表： 
+1字节 0xxxxxxx 
+2字节 110xxxxx 10xxxxxx 
+3字节 1110xxxx 10xxxxxx 10xxxxxx 
+4字节 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
+5字节 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 
+6字节 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 
+
+因此UTF-8中可以用来表示字符编码的实际位数最多有31位，即上表中x所表示的位。除去那些控制位（每字节开头的10等），这些x表示的位与UNICODE编码是一一对应的，位高低顺序也相同。 
+实际将UNICODE转换为UTF-8编码时应先去除高位0，然后根据所剩编码的位数决定所需最小的UTF-8编码位数。 
+因此那些基本ASCII字符集中的字符（UNICODE兼容ASCII）只需要一个字节的UTF-8编码（7个二进制位）便可以表示。 
+
+对于上面的问题，代码中给出的两个字节是 
+十六进制：C0 B1 
+二进制：11000000 10110001 
+对比两个字节编码的表示方式： 
+110xxxxx 10xxxxxx 
+提取出对应的UNICODE编码： 
+00000 110001 
+可以看出此编码并非“标准”的UTF-8编码，因为其第一个字节的“有效编码”全为0，去除高位0后的编码仅有6位。由前面所述，此字符仅用一个字节的UTF-8编码表示就够了。 
+JAVA在把字符还原为UTF-8编码时，是按照“标准”的方式处理的，因此我们得到的是仅有1个字节的编码。 
+
+
+
+类定义
+
+class CChineseCode{
+public:
+ 
+    static void UTF_8ToUnicode(wchar_t* pOut,char *pText);  // 把 UTF-8 转换成 Unicode
+    static void UnicodeToUTF_8(char* pOut,wchar_t* pText);  //Unicode 转换成UTF-8
+    static void UnicodeToGB2312(char* pOut,wchar_t uData);  // 把Unicode 转换成 GB2312 
+    static void Gb2312ToUnicode(wchar_t* pOut,char *gbBuffer);// GB2312 转换成　Unicode
+    static void GB2312ToUTF_8(string& pOut,char *pText, int pLen);//GB2312 转为 UTF-8
+    static void UTF_8ToGB2312(string &pOut, char *pText, int pLen);//UTF-8 转为 GB2312
+};
+ 
+ 
+3字节 1110xxxx 10xxxxxx 10xxxxxx 
+//类实现
+void CChineseCode::UTF_8ToUnicode(wchar_t* pOut,char *pText){
+    char* uchar = (char *)pOut;
+    uchar[1] = ((pText[0] & 0x0F) << 4) + ((pText[1] >> 2) & 0x0F);
+    uchar[0] = ((pText[1] & 0x03) << 6) + (pText[2] & 0x3F);
+    return;
+}
+ 
+void CChineseCode::UnicodeToUTF_8(char* pOut,wchar_t* pText){
+    // 注意 WCHAR高低字的顺序,低字节在前，高字节在后
+    char* pchar = (char *)pText;
+    pOut[0] = (0xE0 | ((pchar[1] & 0xF0) >> 4));
+    pOut[1] = (0x80 | ((pchar[1] & 0x0F) << 2)) + ((pchar[0] & 0xC0) >> 6);
+    pOut[2] = (0x80 | (pchar[0] & 0x3F));
+    return;
+}
+ 
+void CChineseCode::UnicodeToGB2312(char* pOut,wchar_t uData){
+    WideCharToMultiByte(CP_ACP,NULL,&uData,1,pOut,sizeof(wchar_t),NULL,NULL);
+    return;
+}     
+ 
+void CChineseCode::Gb2312ToUnicode(wchar_t* pOut,char *gbBuffer){
+    ::MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,gbBuffer,2,pOut,1);
+    return ;
+}
+ 
+void CChineseCode::GB2312ToUTF_8(string& pOut,char *pText, int pLen){
+    char buf[4];
+    int nLength = pLen* 3;
+    char* rst = new char[nLength];
+     
+    memset(buf,0,4);
+    memset(rst,0,nLength);
+     
+    int i = 0;
+    int j = 0;      
+    while(i < pLen){
+        //如果是英文直接复制就能
+        if( *(pText + i) >= 0){
+            rst[j++] = pText[i++]; 
+        }else{
+              wchar_t pbuffer;
+              Gb2312ToUnicode(&pbuffer,pText+i);
+              UnicodeToUTF_8(buf,&pbuffer);
+              unsigned short int tmp = 0;
+              tmp = rst[j] = buf[0];
+              tmp = rst[j+1] = buf[1];
+              tmp = rst[j+2] = buf[2];    
+              j += 3;
+             
+              i += 2;
+         
+        }
+     
+    }
+     
+    rst[j] = ’’;
+    //返回结果
+    pOut = rst;             
+    delete []rst;     
+    return;
+}
+ 
+void CChineseCode::UTF_8ToGB2312(string &pOut, char *pText, int pLen){
+    char * newBuf = new char[pLen];
+    char Ctemp[4];
+    memset(Ctemp,0,4);
+    int i =0;
+    int j = 0;
+ 
+    while(i < pLen){
+     
+        //if(pText > 0){
+        if( *(pText + i) >= 0){ 
+                 newBuf[j++] = pText[i++];                       
+        }else{
+              WCHAR Wtemp;
+              UTF_8ToUnicode(&Wtemp,pText + i);
+              UnicodeToGB2312(Ctemp,Wtemp);
+              newBuf[j] = Ctemp[0];
+              newBuf[j + 1] = Ctemp[1];
+         
+              i += 3;    
+              j += 2;   
+              }
+        }
+ 
+        newBuf[j] = ’’;
+        pOut = newBuf;
+        delete []newBuf;
+        return; 
+}

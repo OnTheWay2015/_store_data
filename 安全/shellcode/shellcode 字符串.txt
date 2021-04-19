@@ -1,0 +1,33 @@
+void loadfile()
+{
+	char wstr[] = {
+        't','\0'
+        ,'e','\0'
+        ,'s','\0'
+        ,'t','\0'
+        ,'d','\0'
+        ,'l','\0'
+        ,'l','\0'
+        ,'\0','\0'
+    };
+   
+	char str[] = {
+        't'
+        ,'e'
+        ,'s'
+        ,'t'
+        ,'d'
+        ,'l'
+        ,'l'
+        ,'\0'
+        
+    };
+
+    auto x = LoadLibraryA(str);
+    //auto x = LoadLibraryW((LPCWSTR)wstr);
+
+    auto f = GetProcAddress(x,"dllact");
+    f();
+	std::cout << str << std::endl;
+
+}

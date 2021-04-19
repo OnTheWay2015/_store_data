@@ -1,0 +1,35 @@
+//gt, gT 切换文件tab
+
+{
+    //"python.pythonPath":"c:\\Python37\\python.exe",
+    "vim.normalModeKeyBindingsNonRecursive": [
+            {
+                "before": [
+                    "s"
+                ],
+                "commands": [
+                    ":w"
+                ]
+            }
+        //,{
+        //    "before": ["<leader>", "d"],
+        //    "after": ["d", "d"]
+        //}
+        //,{
+        //    "before": ["<C-n>"],
+        //    "commands": [":nohl"]
+        //}
+    ],
+    "vim.searchHighlightColor": "rgba(150, 150, 150, 0.3)", 
+    "vim.useSystemClipboard": true,
+    "vim.hlsearch": true,
+    "window.zoomLevel": 0,
+    "launch": {
+
+        "configurations": [],
+        "compounds": []
+    } //  在配置里选择,show all match ...   (首选项->设置->扩展->vim设置)  取消高亮用 :noh
+	
+	//高亮光标所在的字符串，　光标放在 index上  按*   或者 #　　在vim里gd
+
+}

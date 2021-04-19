@@ -1,0 +1,1562 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="canonical" href="https://blog.csdn.net/qq_31753145/article/details/51259711"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="report" content='{"pid": "blog", "spm":"1001.2101"}'>
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <meta name="applicable-device" content="pc">
+    <link  href="https://g.csdnimg.cn/static/logo/favicon32.ico"  rel="shortcut icon" type="image/x-icon" />
+    <title>字符编码原理 ASCII，Unicode和UTF-8_康志的博客-CSDN博客</title>
+    <script__>
+      (function(){ 
+        var el = document.createElement("script"); 
+        el.src = "https://s3a.pstatp.com/toutiao/push.js?1abfa13dfe74d72d41d83c86d240de427e7cac50c51ead53b2e79d40c7952a23ed7716d05b4a0f683a653eab3e214672511de2457e74e99286eb2c33f4428830"; 
+        el.id = "ttzz"; 
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(el, s);
+      })(window)
+    </script__>
+        <meta name="keywords" content="字符编码原理 ASCII，Unicode和UTF-8">
+        <meta name="csdn-baidu-search"  content='{"autorun":true,"install":true,"keyword":"字符编码原理 ASCII，Unicode和UTF-8"}'>
+    <meta name="description" content="字符编码笔记：ASCII，Unicode和UTF-8今天中午，我突然想搞清楚Unicode和UTF-8之间的关系，于是就开始在网上查资料。结果，这个问题比我想象的复杂，从午饭后一直看到晚上9点，才算初步搞清楚。下面就是我的笔记，主要用来整理自己的思路。但是，我尽量试图写得通俗易懂，希望能对其他朋友有用。毕竟，字符编码是计算机技术的基石，想要熟练使用计算机，就必须懂得">
+    <script__ src='//g.csdnimg.cn/tingyun/1.8.3/blog.js' type='text/javascript'></script__>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-a2acbc5e61.min.css">
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin3-template/skin3-template-45808e735f.min.css">
+    <script__ src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min.js" type="text/javascript"></script__>
+    <script__ type="text/javascript">
+        var isCorporate = false;//注释删除enterprise
+        var username =  "qq_31753145";
+        var skinImg = "white";
+        var blog_address = "https://blog.csdn.net/qq_31753145";
+        var currentUserName = "";
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/qq_31753145/article/details/51259711";
+        var blogUrl = "https://blog.csdn.net/";
+        var avatar = "https://profile.csdnimg.cn/2/4/2/3_qq_31753145";
+        var articleTitle = "字符编码原理 ASCII，Unicode和UTF-8";
+        var articleDesc = "字符编码笔记：ASCII，Unicode和UTF-8今天中午，我突然想搞清楚Unicode和UTF-8之间的关系，于是就开始在网上查资料。结果，这个问题比我想象的复杂，从午饭后一直看到晚上9点，才算初步搞清楚。下面就是我的笔记，主要用来整理自己的思路。但是，我尽量试图写得通俗易懂，希望能对其他朋友有用。毕竟，字符编码是计算机技术的基石，想要熟练使用计算机，就必须懂得";
+        var articleTitles = "字符编码原理 ASCII，Unicode和UTF-8_康志的博客-CSDN博客";
+        var nickName = "康志";
+        var articleDetailUrl = "https://blog.csdn.net/qq_31753145/article/details/51259711";
+        if(window.location.host.split('.').length == 3) {
+            blog_address = blogUrl + username;
+        }
+        var skinStatus = "White";
+        var blogStaticHost = "https://csdnimg.cn/release/blogv2/"
+    </script__>
+    <script__ src="https://g.csdnimg.cn/??fixed-sidebar/1.1.6/fixed-sidebar.js" type="text/javascript"></script__>
+    <script__ src='//g.csdnimg.cn/common/csdn-report/report.js' type='text/javascript'></script__>
+    <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css">
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+    <script__ src="https://dup.baidustatic.com/js/ds.js"></script__>
+</head>
+<body class="nodata " style="">
+        <script__>
+            var toolbarSearchExt = '{"landingWord":[],"queryWord":"","tag":["ASCII Unicode UTF-8"],"title":"字符编码原理 ASCII，Unicode和UTF-8"}';
+        </script__>
+    <script__ src="https://g.csdnimg.cn/common/csdn-toolbar/csdn-toolbar.js" type="text/javascript"></script__>
+    <script__>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script__>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css" />
+<div class="main_father clearfix d-flex justify-content-center" style="height:100%;"> 
+    <div class="container clearfix" id="mainBox">
+        <main>
+<script__ type="text/javascript">
+    var blogSensitiveWords = "";
+    function getQueryString(name) {   
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+      var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+      if( r != null ) return decodeURIComponent( r[2] ); return '';   
+    }
+    function stripscript(s){ 
+      var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%]") 
+      var rs = ""; 
+      for (var i = 0; i < s.length; i++) { 
+        rs = rs+s.substr(i, 1).replace(pattern, ''); 
+      } 
+      return rs; 
+    }
+    var blogHotWords = stripscript(getQueryString('utm_term')).length > 1 ? stripscript(getQueryString('utm_term')) : ''
+</script__>
+<div class="blog-content-box">
+    <div class="article-header-box">
+        <div class="article-header">
+            <div class="article-title-box">
+                <h1 class="title-article" id="articleContentId">字符编码原理 ASCII，Unicode和UTF-8</h1>
+            </div>
+            <div class="article-info-box">
+                <div class="article-bar-top">
+                    <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt="">
+                    <div class="bar-content">
+                    <a class="follow-nickName " href="https://blog.csdn.net/qq_31753145" target="_blank" rel="noopener">康志</a>
+                    <span class="time">2016-04-27 11:29:07</span>
+                    <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes.png" alt="">
+                    <span class="read-count">2368</span>
+                    <a id="blog_detail_zk_collection" class="un-collection" data-report-click='{"mod":"popu_823","spm":"1001.2101.3001.4232","ab":"new"}'>
+                        <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect.png" alt="">
+                        <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt="">
+                        <span class="name">收藏</span>
+                        <span class="get-collection">
+                        </span>
+                    </a>
+                    </div>
+                </div>
+                <div class="blog-tags-box">
+                    <div class="tags-box artic-tag-box">
+                            <span class="label">分类专栏：</span>
+                                <a class="tag-link" href="https://blog.csdn.net/qq_31753145/category_6109404.html" target="_blank" rel="noopener">Android</a>
+                            <span class="label">文章标签：</span>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"ASCII Unicode UTF-8","ab":"new"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=ASCII Unicode UTF-8&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">ASCII Unicode UTF-8</a>
+                    </div>
+                </div>
+                <div class="slide-content-box">
+                    <div class="article-copyright">
+                        <div class="creativecommons">
+                            版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
+                        </div>
+                        <div class="article-source-link">
+                            本文链接：<a href="https://blog.csdn.net/qq_31753145/article/details/51259711" target="_blank">https://blog.csdn.net/qq_31753145/article/details/51259711</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="operating">
+                    <a class="href-article-edit slide-toggle">版权</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <article class="baidu_pl">
+        <div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-b5506197d8.css">
+                <div id="content_views" class="htmledit_views">
+                    <div class="asset-body" style="font-size:14px; margin:0px; padding:0px; border:none; color:rgb(17,17,17); font-family:Georgia,serif; line-height:23px; background-color:rgb(245,245,213)"> 
+ <h1 class="asset-name entry-title" style="text-align:center; line-height:1.5em; margin:0px 0px 0.5em; padding:0px; color:black"> 字符编码笔记&#xff1a;ASCII&#xff0c;Unicode和UTF-8</h1> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 今天中午&#xff0c;我突然想搞清楚Unicode和UTF-8之间的关系&#xff0c;于是就开始在网上查资料。</p> 
+</div> 
+<div class="asset-more" style="font-size:14px; margin:0px; padding:0px; border:none; color:rgb(17,17,17); font-family:Georgia,serif; line-height:23px; background-color:rgb(245,245,213)"> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 结果&#xff0c;这个问题比我想象的复杂&#xff0c;从午饭后一直看到晚上9点&#xff0c;才算初步搞清楚。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 下面就是我的笔记&#xff0c;主要用来整理自己的思路。但是&#xff0c;我尽量试图写得通俗易懂&#xff0c;希望能对其他朋友有用。毕竟&#xff0c;字符编码是计算机技术的基石&#xff0c;想要熟练使用计算机&#xff0c;就必须懂得一点字符编码的知识。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>1. ASCII码</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 我们知道&#xff0c;在计算机内部&#xff0c;所有的信息最终都表示为一个二进制的字符串。每一个二进制位&#xff08;bit&#xff09;有0和1两种状态&#xff0c;因此八个二进制位就可以组合出256种状态&#xff0c;这被称为一个字节&#xff08;byte&#xff09;。也就是说&#xff0c;一个字节一共可以用来表示256种不同的状态&#xff0c;每一个状态对应一个符号&#xff0c;就是256个符号&#xff0c;从0000000到11111111。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 上个世纪60年代&#xff0c;美国制定了一套字符编码&#xff0c;对英语字符与二进制位之间的关系&#xff0c;做了统一规定。这被称为ASCII码&#xff0c;一直沿用至今。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> ASCII码一共规定了128个字符的编码&#xff0c;比如空格“SPACE”是32&#xff08;二进制00100000&#xff09;&#xff0c;大写的字母A是65&#xff08;二进制01000001&#xff09;。这128个符号&#xff08;包括32个不能打印出来的控制符号&#xff09;&#xff0c;只占用了一个字节的后面7位&#xff0c;最前面的1位统一规定为0。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>2、非ASCII编码</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 英语用128个符号编码就够了&#xff0c;但是用来表示其他语言&#xff0c;128个符号是不够的。比如&#xff0c;在法语中&#xff0c;字母上方有注音符号&#xff0c;它就无法用ASCII码表示。于是&#xff0c;一些欧洲国家就决定&#xff0c;利用字节中闲置的最高位编入新的符号。比如&#xff0c;法语中的é的编码为130&#xff08;二进制10000010&#xff09;。这样一来&#xff0c;这些欧洲国家使用的编码体系&#xff0c;可以表示最多256个符号。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 但是&#xff0c;这里又出现了新的问题。不同的国家有不同的字母&#xff0c;因此&#xff0c;哪怕它们都使用256个符号的编码方式&#xff0c;代表的字母却不一样。比如&#xff0c;130在法语编码中代表了é&#xff0c;在希伯来语编码中却代表了字母Gimel (ג)&#xff0c;在俄语编码中又会代表另一个符号。但是不管怎样&#xff0c;所有这些编码方式中&#xff0c;0—127表示的符号是一样的&#xff0c;不一样的只是128—255的这一段。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 至于亚洲国家的文字&#xff0c;使用的符号就更多了&#xff0c;汉字就多达10万左右。一个字节只能表示256种符号&#xff0c;肯定是不够的&#xff0c;就必须使用多个字节表达一个符号。比如&#xff0c;简体中文常见的编码方式是GB2312&#xff0c;使用两个字节表示一个汉字&#xff0c;所以理论上最多可以表示256x256&#61;65536个符号。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 中文编码的问题需要专文讨论&#xff0c;这篇笔记不涉及。这里只指出&#xff0c;虽然都是用多个字节表示一个符号&#xff0c;但是GB类的汉字编码与后文的Unicode和UTF-8是毫无关系的。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>3.Unicode</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 正如上一节所说&#xff0c;世界上存在着多种编码方式&#xff0c;同一个二进制数字可以被解释成不同的符号。因此&#xff0c;要想打开一个文本文件&#xff0c;就必须知道它的编码方式&#xff0c;否则用错误的编码方式解读&#xff0c;就会出现乱码。为什么电子邮件常常出现乱码&#xff1f;就是因为发信人和收信人使用的编码方式不一样。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 可以想象&#xff0c;如果有一种编码&#xff0c;将世界上所有的符号都纳入其中。每一个符号都给予一个独一无二的编码&#xff0c;那么乱码问题就会消失。这就是Unicode&#xff0c;就像它的名字都表示的&#xff0c;这是一种所有符号的编码。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> Unicode当然是一个很大的集合&#xff0c;现在的规模可以容纳100多万个符号。每个符号的编码都不一样&#xff0c;比如&#xff0c;U&#43;0639表示阿拉伯字母Ain&#xff0c;U&#43;0041表示英语的大写字母A&#xff0c;U&#43;4E25表示汉字“严”。具体的符号对应表&#xff0c;可以查询<a target="_blank" href="http://www.unicode.org/" style="color:rgb(17,34,51); margin:0px; padding:0px; border:none" rel="noopener noreferrer">unicode.org</a>&#xff0c;或者专门的<a target="_blank" href="http://www.chi2ko.com/tool/CJK.htm" style="color:rgb(17,34,51); margin:0px; padding:0px; border:none" rel="noopener noreferrer">汉字对应表</a>。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>4. Unicode的问题</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 需要注意的是&#xff0c;Unicode只是一个符号集&#xff0c;它只规定了符号的二进制代码&#xff0c;却没有规定这个二进制代码应该如何存储。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 比如&#xff0c;汉字“严”的unicode是十六进制数4E25&#xff0c;转换成二进制数足足有15位&#xff08;100111000100101&#xff09;&#xff0c;也就是说这个符号的表示至少需要2个字节。表示其他更大的符号&#xff0c;可能需要3个字节或者4个字节&#xff0c;甚至更多。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 这里就有两个严重的问题&#xff0c;第一个问题是&#xff0c;如何才能区别unicode和ascii&#xff1f;计算机怎么知道三个字节表示一个符号&#xff0c;而不是分别表示三个符号呢&#xff1f;第二个问题是&#xff0c;我们已经知道&#xff0c;英文字母只用一个字节表示就够了&#xff0c;如果unicode统一规定&#xff0c;每个符号用三个或四个字节表示&#xff0c;那么每个英文字母前都必然有二到三个字节是0&#xff0c;这对于存储来说是极大的浪费&#xff0c;文本文件的大小会因此大出二三倍&#xff0c;这是无法接受的。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 它们造成的结果是&#xff1a;1&#xff09;出现了unicode的多种存储方式&#xff0c;也就是说有许多种不同的二进制格式&#xff0c;可以用来表示unicode。2&#xff09;unicode在很长一段时间内无法推广&#xff0c;直到互联网的出现。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>5.UTF-8</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 互联网的普及&#xff0c;强烈要求出现一种统一的编码方式。UTF-8就是在互联网上使用最广的一种unicode的实现方式。其他实现方式还包括UTF-16和UTF-32&#xff0c;不过在互联网上基本不用。<strong>重复一遍&#xff0c;这里的关系是&#xff0c;UTF-8是Unicode的实现方式之一。</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> UTF-8最大的一个特点&#xff0c;就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号&#xff0c;根据不同的符号而变化字节长度。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> UTF-8的编码规则很简单&#xff0c;只有二条&#xff1a;</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 1&#xff09;对于单字节的符号&#xff0c;字节的第一位设为0&#xff0c;后面7位为这个符号的unicode码。因此对于英语字母&#xff0c;UTF-8编码和ASCII码是相同的。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 2&#xff09;对于n字节的符号&#xff08;n&gt;1&#xff09;&#xff0c;第一个字节的前n位都设为1&#xff0c;第n&#43;1位设为0&#xff0c;后面字节的前两位一律设为10。剩下的没有提及的二进制位&#xff0c;全部为这个符号的unicode码。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 下表总结了编码规则&#xff0c;字母x表示可用编码的位。</p> 
+ <blockquote style="border:none; margin:2em; padding:1em; background-color:rgb(224,223,204)"> 
+  <div style="margin:0px; padding:0px; border:none"> 
+   <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> Unicode符号范围 | UTF-8编码方式<br /> (十六进制) | &#xff08;二进制&#xff09;<br /> --------------------&#43;---------------------------------------------<br /> 0000 0000-0000 007F | 0xxxxxxx<br /> 0000 0080-0000 07FF | 110xxxxx 10xxxxxx<br /> 0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx<br /> 0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</p> 
+  </div> 
+ </blockquote> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 下面&#xff0c;还是以汉字“严”为例&#xff0c;演示如何实现UTF-8编码。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 已知“严”的unicode是4E25&#xff08;100111000100101&#xff09;&#xff0c;根据上表&#xff0c;可以发现4E25处在第三行的范围内&#xff08;0000 0800-0000 FFFF&#xff09;&#xff0c;因此“严”的UTF-8编码需要三个字节&#xff0c;即格式是“1110xxxx 10xxxxxx 10xxxxxx”。然后&#xff0c;从“严”的最后一个二进制位开始&#xff0c;依次从后向前填入格式中的x&#xff0c;多出的位补0。这样就得到了&#xff0c;“严”的UTF-8编码是“11100100 10111000 10100101”&#xff0c;转换成十六进制就是E4B8A5。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>6. Unicode与UTF-8之间的转换</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 通过上一节的例子&#xff0c;可以看到“严”的Unicode码是4E25&#xff0c;UTF-8编码是E4B8A5&#xff0c;两者是不一样的。它们之间的转换可以通过程序实现。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 在Windows平台下&#xff0c;有一个最简单的转化方法&#xff0c;就是使用内置的记事本小程序Notepad.exe。打开文件后&#xff0c;点击“文件”菜单中的“另存为”命令&#xff0c;会跳出一个对话框&#xff0c;在最底部有一个“编码”的下拉条。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <a target="_blank" href="http://www.ruanyifeng.com/blog/2007/10/bg2007102801.jpg" style="color:rgb(17,34,51); margin:0px; padding:0px; border:none" rel="noopener noreferrer"><img height="227" width="500" alt="bg2007102801.jpg" src="http://www.ruanyifeng.com/blog/2007/10/bg2007102801-thumb.jpg" style="border:1px solid gray; margin:0px; padding:0px; text-decoration:none; color:rgb(17,17,17)" /></a></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 里面有四个选项&#xff1a;ANSI&#xff0c;Unicode&#xff0c;Unicode big endian 和 UTF-8。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 1&#xff09;ANSI是默认的编码方式。对于英文文件是ASCII编码&#xff0c;对于简体中文文件是GB2312编码&#xff08;只针对Windows简体中文版&#xff0c;如果是繁体中文版会采用Big5码&#xff09;。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 2&#xff09;Unicode编码指的是UCS-2编码方式&#xff0c;即直接用两个字节存入字符的Unicode码。这个选项用的little endian格式。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 3&#xff09;Unicode big endian编码与上一个选项相对应。我在下一节会解释little endian和big endian的涵义。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 4&#xff09;UTF-8编码&#xff0c;也就是上一节谈到的编码方法。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 选择完”编码方式“后&#xff0c;点击”保存“按钮&#xff0c;文件的编码方式就立刻转换好了。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>7. Little endian和Big endian</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 上一节已经提到&#xff0c;Unicode码可以采用UCS-2格式直接存储。以汉字”严“为例&#xff0c;Unicode码是4E25&#xff0c;需要用两个字节存储&#xff0c;一个字节是4E&#xff0c;另一个字节是25。存储的时候&#xff0c;4E在前&#xff0c;25在后&#xff0c;就是Big endian方式&#xff1b;25在前&#xff0c;4E在后&#xff0c;就是Little endian方式。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 这两个古怪的名称来自英国作家斯威夫特的《格列佛游记》。在该书中&#xff0c;小人国里爆发了内战&#xff0c;战争起因是人们争论&#xff0c;吃鸡蛋时究竟是从大头(Big-Endian)敲开还是从小头(Little-Endian)敲开。为了这件事情&#xff0c;前后爆发了六次战争&#xff0c;一个皇帝送了命&#xff0c;另一个皇帝丢了王位。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 因此&#xff0c;第一个字节在前&#xff0c;就是”大头方式“&#xff08;Big endian&#xff09;&#xff0c;第二个字节在前就是”小头方式“&#xff08;Little endian&#xff09;。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 那么很自然的&#xff0c;就会出现一个问题&#xff1a;计算机怎么知道某一个文件到底采用哪一种方式编码&#xff1f;</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> Unicode规范中定义&#xff0c;每一个文件的最前面分别加入一个表示编码顺序的字符&#xff0c;这个字符的名字叫做”零宽度非换行空格“&#xff08;ZERO WIDTH NO-BREAK SPACE&#xff09;&#xff0c;用FEFF表示。这正好是两个字节&#xff0c;而且FF比FE大1。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 如果一个文本文件的头两个字节是FE FF&#xff0c;就表示该文件采用大头方式&#xff1b;如果头两个字节是FF FE&#xff0c;就表示该文件采用小头方式。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>8. 实例</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 下面&#xff0c;举一个实例。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 打开”记事本“程序Notepad.exe&#xff0c;新建一个文本文件&#xff0c;内容就是一个”严“字&#xff0c;依次采用ANSI&#xff0c;Unicode&#xff0c;Unicode big endian 和 UTF-8编码方式保存。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 然后&#xff0c;用文本编辑软件<a target="_blank" href="http://www.google.cn/search?aq&#61;t&amp;oq&#61;UltraEdit&amp;complete&#61;1&amp;hl&#61;zh-CN&amp;newwindow&#61;1&amp;rlz&#61;1B3GGGL_zh-CNCN216CN216&amp;q&#61;ultraedit&#43;%E4%B8%8B%E8%BD%BD&amp;btnG&#61;Google&#43;%E6%90%9C%E7%B4%A2&amp;meta&#61;" style="color:rgb(17,34,51); margin:0px; padding:0px; border:none" rel="noopener noreferrer">UltraEdit中</a>的”十六进制功能“&#xff0c;观察该文件的内部编码方式。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 1&#xff09;ANSI&#xff1a;文件的编码就是两个字节“D1 CF”&#xff0c;这正是“严”的GB2312编码&#xff0c;这也暗示GB2312是采用大头方式存储的。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 2&#xff09;Unicode&#xff1a;编码是四个字节“FF FE 25 4E”&#xff0c;其中“FF FE”表明是小头方式存储&#xff0c;真正的编码是4E25。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 3&#xff09;Unicode big endian&#xff1a;编码是四个字节“FE FF 4E 25”&#xff0c;其中“FE FF”表明是大头方式存储。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> 4&#xff09;UTF-8&#xff1a;编码是六个字节“EF BB BF E4 B8 A5”&#xff0c;前三个字节“EF BB BF”表示这是UTF-8编码&#xff0c;后三个“E4B8A5”就是“严”的具体编码&#xff0c;它的存储顺序与编码顺序是一致的。</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> <strong>9. 延伸阅读</strong></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> * <a target="_blank" href="http://www.joelonsoftware.com/articles/Unicode.html" style="color:rgb(17,34,51); margin:0px; padding:0px; border:none" rel="noopener noreferrer">The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets</a>&#xff08;关于字符集的最基本知识&#xff09;</p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> * <a target="_blank" href="http://www.pconline.com.cn/pcedu/empolder/gj/other/0505/616631.html" style="color:rgb(17,34,51); margin:0px; padding:0px; border:none" rel="noopener noreferrer">谈谈Unicode编码</a></p> 
+ <p style="margin-top:1em; margin-bottom:0px; margin-left:0.8em; padding-top:0px; padding-bottom:0px; border:none; font-size:1.6em; line-height:36px"> * <a target="_blank" href="http://www.ietf.org/rfc/rfc3629.txt" style="color:rgb(17,34,51); margin:0px; padding:0px; border:none" rel="noopener noreferrer">RFC3629&#xff1a;UTF-8, a transformation format of ISO 10646</a>&#xff08;如果实现UTF-8的规定&#xff09;</p> 
+</div>
+                </div>
+        </div>
+    </article>
+</div>
+            <div id="csdn-shop-window"></div>
+<div class="more-toolbox" id="toolBarBox">
+    <span id="fixedBar"></span>
+    <div class="left-toolbox">
+        <ul class="toolbox-list">
+            <li class="tool-item tool-item-size tool-active is-like" id="is-like"><a>
+            <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt="">
+            <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt="">
+            <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUp.png" alt="">   
+            <span class="name" id="is-like-span">点赞</span>
+            <span id="spanCount" class="count">
+                    1
+            </span>
+            </a></li>
+            <li class="tool-item tool-item-size tool-active tool-item-comment">
+                <a href="#commentBox">
+                    <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarComment.png" alt="">
+                    <img class="isactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCommentactive.png" style="display:none;" alt="">
+                    <span class="name">评论</span>
+                    <span class="count">
+                    </span>
+                </a>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-QRcode" id="tool-share">
+                <a href="javascript:;" data-report-click='{"mod":"1582594662_002","spm":"1001.2101.3001.4129","ab":"new"}'>
+                    <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarShare.png" alt="">
+                    <img class="isactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarShareactive.png" style="display:none;" alt="">
+                    <span class="name">分享</span>
+                </a>
+                <div class="QRcode" id="tool-QRcode" style="left:-92%;">
+                    <span id="QRcode-close">x</span>
+                    <p class="title">
+                    海报分享
+                    </p>
+                    <div id='shareCode'></div>
+                    <p>
+                    扫一扫，分享海报
+                    </p>
+                </div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-collection ">
+                <a href="javascript:;" data-report-click='{"mod":"popu_824","spm":"1001.2101.3001.4130","ab":"new"}'>
+                    <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt="">
+                    <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect.png" alt="">
+                    <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt="">
+                    <span class="name" id="is-collection">收藏</span>
+                    <span class="count get-collection" id="get-collection">
+                    </span>
+                </a>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-reward">
+                <a  id="toolreward" data-report-click='{"mod":"popu_830","spm":"1001.2101.3001.4237","dest":"","ab":"new"}'>
+                    <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarReward.png" alt="">
+                    <img class="isactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarRewardactive.png" style="display:none;" alt="">
+                    <span class="name">打赏</span>
+                </a>
+<div id="reward" class="reward-box">
+	<p class="rewad-title">打赏<span class="reward-close"><svg t="1567152543821" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"><defs><style type="text/css"></style></defs><path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path></svg></span></p>
+	<dl>
+		<dd>
+		<a href="https://blog.csdn.net/qq_31753145" data-report-click='{"mod":"popu_379","dest":"https://blog.csdn.net/qq_31753145","ab":"new"}'>
+			<img src="https://profile.csdnimg.cn/2/4/2/3_qq_31753145" class="avatar_pic">
+		</a>
+		</dd>
+		<dt>
+			<p class="blog-name">康志</p>
+			<p class="blog-discript">你的鼓励将是我创作的最大动力</p>
+		</dt>
+	</dl>
+	<div class="change-bt-box">
+		<span class="reward-bt reward-bt-coin">C币</span>
+		<span class="reward-bt-space"></span>
+		<span class="reward-bt reward-bt-money reward-bt-active">余额</span>
+	</div>
+	<div class="money-box">
+			<span class="choose_money choosed" data-id="2">2C币</span>
+			<span class="choose_money " data-id="4">4C币</span>
+			<span class="choose_money " data-id="6">6C币</span>
+			<span class="choose_money " data-id="10">10C币</span>
+			<span class="choose_money " data-id="20">20C币</span>
+			<span class="choose_money " data-id="50">50C币</span>
+	</div>
+	<div class="sure-box">
+		<p class="is-have-money"><a class="reward-sure">确定</a></p>
+	</div>
+</div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-more">
+              <a class="article-report">
+                <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarReport.png" alt="">
+                <img class="isactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarReportactive.png" style="display:none;" alt="">
+                <span class="name">举报</span>
+              </a>
+            </li>
+            <li class="tool-item">
+                    <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view='{"mod":"1592215036_002","spm":"1001.2101.3001.4232","extend1":"关注"}'>关注</a>
+                <a class="tool-item-follow active-animation" style="display:none;">关注</a>
+            </li>
+            <li class="tool-item">
+                    <p class="company active" id="health-companies" href="javascript:;" >一键三连</p>
+                <span class="triplet-prompt">点赞Mark关注该博主, 随时了解TA的最新博文<img class="close-prompt" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closePrompt.png"></span>
+            </li>
+        </ul>
+        <div style="display:flex">
+         </div>
+         <div class="hot-word-tip-box">
+          <span class="hot-word-text">已标记关键词</span>
+          <span class="hot-word-count"></span> 
+          <span class="hot-word-bar"></span>
+          <span class="hot-word-clear">清除标记</span>
+        </div>
+    </div>  
+</div>
+<script__ type=text/javascript crossorigin src="https://csdnimg.cn/release/phoenix/production/qrcode-7c90a92189.min.js"></script__>
+<script__ src="//g.csdnimg.cn/??sharewx/1.2.1/sharewx.js" type="text/javascript"></script__>
+<script__ type="text/javascript" crossorigin src="https://g.csdnimg.cn/collection-box/2.0.3/collection-box.js"></script__>
+                <div class="first-recommend-box recommend-box">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yuanwofei/article/details/12846331"  data-report-view='{"ab":"new","mod":"popu_871","extra":"{\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control\"}","dist_request_id":"","index":"1","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/yuanwofei/article/details/12846331"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/yuanwofei/article/details/12846331" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_871","extra":"{\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control\"}","dist_request_id":"","index":"1","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/yuanwofei/article/details/12846331"}'  data-report-query='utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control'>
+					<em>ASCII</em>码与英文的显示<em>原理</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/yuanwofei" target="_blank"><span class="blog-title">yuanwofei</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">10-18</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					5121
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yuanwofei/article/details/12846331" target="_blank"  data-report-click='{"ab":"new","mod":"popu_871","extra":"{\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control\"}","dist_request_id":"","index":"1","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/yuanwofei/article/details/12846331"}'  data-report-query='utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">一、<em>ASCII</em>码
+&nbsp; &nbsp; &nbsp; &nbsp;英文<em>字符</em>、数字和计算机中用的控制符号在计算机中是用<em>ASCII</em>码来表示的。<em>ASCII</em>码（American Standard Code for Interchange）是美国国家信息交换标准码，现已成为国际通用的信息交换标准代码。
+&nbsp; &nbsp; &nbsp; &nbsp;<em>ASCII</em>码共有12<em>8</em>个元素，其中通用<em>字符</em>32个、十进制数字10个、52个英文大小写字母和34个专用符号。这12<em>8</em>个元素用</div>
+			</a>
+		</div>
+	</div>
+</div>
+                </div>
+            <div class="second-recommend-box recommend-box">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/xin_hua_3/article/details/18142699"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control\"}","dist_request_id":"","index":"1","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/xin_hua_3/article/details/18142699"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/xin_hua_3/article/details/18142699" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control\"}","dist_request_id":"","index":"1","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/xin_hua_3/article/details/18142699"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control'>
+					<em>UTF-</em><em>8</em>转为<em>ASCII</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/xin_hua_3" target="_blank"><span class="blog-title">漫步独行的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">01-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					757
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/xin_hua_3/article/details/18142699" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control\"}","dist_request_id":"","index":"1","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/xin_hua_3/article/details/18142699"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">一般从服务器上获取到的网页数据是<em>UTF-</em><em>8</em>格式，要在对话框上显示正确无乱码，必须转成<em>ASCII</em><em>编码</em>。
+这种方法比较简单方便:&nbsp;
+
+
+
+void ConvertUTF<em>8</em>ToANSI(char* strUTF<em>8</em>,CString &amp;strANSI) //&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;&nbsp;
+int nLen = ::MultiByteToWideChar(CP_UTF<em>8</em>,MB_ERR_INVALID_CHAR</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<a id="commentBox" name="commentBox"></a>
+<div class="comment-box">
+	<div class="comment-edit-box d-flex">
+		<a id="commentsedit"></a>
+		<div class="user-img">
+			<a href="javascript:void(0);" >
+				<img class="show_loginbox" src="https://g.csdnimg.cn/static/user-img/anonymous-User-img.png">
+			</a>
+		</div>
+		<form id="commentform">
+			<img class="comment-sofa-flag" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentFlag@2x.png">
+      <textarea class="comment-content" name="comment_content" id="comment_content" placeholder="优质评论可以帮助作者获得更高权重" maxlength="1000"></textarea>
+			<div class="comment-emoticon"><img class="comment-emoticon-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/emoticon.png" alt="表情包"></div> 
+      <span class="comment-emoticon-tip">插入表情</span>
+      <div class="comment-emoticon-box">
+        <div class="comment-emoticon-img-box">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:001.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/001.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:002.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/002.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:003.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/003.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:004.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/004.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:005.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/005.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:006.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/006.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:007.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/007.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:008.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/008.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:009.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/009.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:010.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/010.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:011.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/011.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:012.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/012.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:013.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/013.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:014.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/014.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:015.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/015.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:016.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/016.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:017.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/017.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:018.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/018.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:019.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/019.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:020.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/020.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:021.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/021.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:022.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/022.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:023.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/023.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:024.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/024.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:025.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/025.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:026.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/026.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:027.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/027.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:028.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/028.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:029.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/029.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:030.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/030.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:031.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/031.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:032.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/032.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:033.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/033.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:034.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/034.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:035.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/035.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:036.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/036.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:037.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/037.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:038.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/038.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:039.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/039.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:040.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/040.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:041.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/041.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:042.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/042.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:043.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/043.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:044.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/044.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:045.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/045.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:046.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/046.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:047.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/047.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:048.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/048.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:049.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/049.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:050.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/050.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:051.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/051.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:052.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/052.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:053.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/053.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:054.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/054.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:055.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/055.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:056.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/056.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:057.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/057.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:058.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/058.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:059.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/059.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:060.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/060.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:061.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/061.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:062.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/062.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:063.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/063.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:064.png[/face]" src="https://g.csdnimg.cn/static/face/monkey2/064.png">
+        </div>
+      </div>
+      <div class="opt-box">
+				<div id="ubbtools" class="add_code">
+					<a href="#insertcode" code="code" target="_self"><i class="icon iconfont icon-daima"></i></a>
+				</div>
+				<input type="hidden" id="comment_replyId" name="comment_replyId">
+				<input type="hidden" id="article_id" name="article_id" value="51259711">
+				<input type="hidden" id="comment_userId" name="comment_userId" value="">
+				<input type="hidden" id="commentId" name="commentId" value="">
+				<div class="dropdown" id="myDrap">
+					<a class="dropdown-face d-flex align-items-center" data-toggle="dropdown" role="button"
+						aria-haspopup="true" aria-expanded="false">
+						<div class="txt-selected text-truncate">添加代码片</div>
+						<svg class="icon d-block" width="200px" height="100.00px" viewBox="0 0 2048 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path  d="M597.33333292 298.666667h853.333334L1023.99999992 725.333333 597.33333292 298.666667z"  /></svg>
+					</a>
+					<ul class="dropdown-menu" id="commentCode" aria-labelledby="drop4">
+						<li><a data-code="html">HTML/XML</a></li>
+						<li><a data-code="objc">objective-c</a></li>
+						<li><a data-code="ruby">Ruby</a></li>
+						<li><a data-code="php">PHP</a></li>
+						<li><a data-code="csharp">C</a></li>
+						<li><a data-code="cpp">C++</a></li>
+						<li><a data-code="javascript">JavaScript</a></li>
+						<li><a data-code="python">Python</a></li>
+						<li><a data-code="java">Java</a></li>
+						<li><a data-code="css">CSS</a></li>
+						<li><a data-code="sql">SQL</a></li>
+						<li><a data-code="plain">其它</a></li>
+					</ul>
+				</div>
+				<div class="right-box" id="rightBox" data-type="2">
+							<span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span>
+							<a data-report-click='{"mod":"1582594662_003","spm":"1001.2101.3001.4227","ab":"new"}'><input type="submit"
+									class="btn btn-sm btn-comment" value="发表评论"></a>
+				</div>
+			</div>
+		</form>
+		<input type="button" class="bt-comment-show" value="评论">
+	</div>
+	<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div>
+		</div>
+	</div>
+</div>            <div class="recommend-tit-mod">相关推荐</div>
+            <div class="recommend-box insert-baidu-box">
+                <div class="recommend-item-box clearfix" style="display:none"></div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/taoy86/article/details/83419120"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-2.control\"}","dist_request_id":"","index":"2","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/taoy86/article/details/83419120"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/taoy86/article/details/83419120" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-2.control\"}","dist_request_id":"","index":"2","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/taoy86/article/details/83419120"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-2.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-2.control'>
+					<em>ASCII</em>，<em>Unicode</em>和<em>UTF-</em><em>8</em>终于找到一个能完全搞清楚的文章了
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/taoy86" target="_blank"><span class="blog-title">taoy86的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">10-26</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					895
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/taoy86/article/details/83419120" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-2.control\"}","dist_request_id":"","index":"2","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/taoy86/article/details/83419120"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-2.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-2.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">前言
+
+平时喜欢写东西，看博客，一直对<em>编码</em>有些懵，今天下午也不知道看到了什么，突然想了解下，就找到了这个文章，看完真的豁然开朗，这个必须留下来做纪念。
+
+点击打开链接
+
+1.<em>ASCII</em>
+
+我们知道，计算机内部，所有信息最终都是一个二进制值。每一个二进制位（bit）有0和1两种状态，因此八个二进制位就可以组合出256种状态，这被称为一个字节（byte）。也就是说，一个字节一共可以用来表示256种不同...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/sdwuyulunbi/article/details/80931960"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-3.control\"}","dist_request_id":"","index":"3","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/sdwuyulunbi/article/details/80931960"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/sdwuyulunbi/article/details/80931960" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-3.control\"}","dist_request_id":"","index":"3","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/sdwuyulunbi/article/details/80931960"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-3.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-3.control'>
+					<em>字符</em><em>编码</em><em>ASCII</em>、GB2312、<em>Unicode</em>、<em>UTF-</em><em>8</em>&mdash;&mdash;深入解析
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/sdwuyulunbi" target="_blank"><span class="blog-title">蛋蛋强的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-05</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					4253
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/sdwuyulunbi/article/details/80931960" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-3.control\"}","dist_request_id":"","index":"3","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/sdwuyulunbi/article/details/80931960"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-3.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-3.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">几个值得深思的问题什么是<em>字符</em>？<em>字符</em>是各种文字和符号的总称，包括各个国家文字、标点符号、图形符号、数字等。什么是<em>字符</em>集？<em>字符</em>集是多个<em>字符</em>的集合，<em>字符</em>集种类较多，每个<em>字符</em>集包含的<em>字符</em>个数不同，常见<em>字符</em>集有：<em>ASCII</em><em>字符</em>集、ISO <em>8</em><em>8</em>59<em>字符</em>集、GB2312<em>字符</em>集、BIG5<em>字符</em>集、GB1<em>8</em>030<em>字符</em>集、<em>Unicode</em><em>字符</em>集等什么是<em>字符</em><em>编码</em>？1、 计算机要准确的处理各种<em>字符</em>集文字，需要进行<em>字符</em><em>编码</em>，以...</div>
+			</a>
+		</div>
+	</div>
+</div>
+		<dl id="recommend-item-box-tow" class="recommend-item-box type_blog clearfix">
+			
+		</dl>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_30642869/article/details/97894995"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-4.control\"}","dist_request_id":"","index":"4","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/weixin_30642869/article/details/97894995"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_30642869/article/details/97894995" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-4.control\"}","dist_request_id":"","index":"4","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/weixin_30642869/article/details/97894995"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control'>
+					<em>字符</em><em>编码</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_30642869" target="_blank"><span class="blog-title">weixin_30642869的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-15</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					50
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_30642869/article/details/97894995" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-4.control\"}","dist_request_id":"","index":"4","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/weixin_30642869/article/details/97894995"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">转自:http://www.liaoxuefeng.com/wiki/00137473<em>8</em>125095c955c1e6d<em>8</em>bb4931<em>8</em>2103fac9270762a000/0013<em>8</em>6<em>8</em>191962<em>8</em>35<em>8</em>6a37629<em>8</em>44456ca7e5a7faa9b94ee<em>8</em>000
+我们已经讲过了，<em>字符</em>串也是一种数据类型，但是，<em>字符</em>串比较特殊的是还有一个<em>编码</em>问题。
+因为计算机只能处理数字，如果要处理文本...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_30369087/article/details/96883178"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-5.control\"}","dist_request_id":"","index":"5","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/weixin_30369087/article/details/96883178"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_30369087/article/details/96883178" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-5.control\"}","dist_request_id":"","index":"5","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/weixin_30369087/article/details/96883178"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.control'>
+					<em>Unicode</em>的二三事[ZT]
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_30369087" target="_blank"><span class="blog-title">weixin_30369087的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-16</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					296
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_30369087/article/details/96883178" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-5.control\"}","dist_request_id":"","index":"5","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/weixin_30369087/article/details/96883178"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">很久很久以前，有一群人，他们决定用<em>8</em>个可以开合的晶体管来组合成不同的状态，以表示世界上的万物。他们看到<em>8</em>个开关状态是好的，于是他们把这称为&quot;字节&quot;。再后来，他们又做了一些可以处理这些字节的机器，机器开动了，可以用字节来组合出很多状态，状态开始变来变去。他们看到这样是好的，于是它们就这机器称为&quot;计算机&quot;。　　开始计算机只在美国用。八位的字节一共可以组合出256(2的<em>8</em>次方)种不同的状态。他们把其中的...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/zhangnipa/article/details/108764205"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-6.control\"}","dist_request_id":"","index":"6","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/zhangnipa/article/details/108764205"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/zhangnipa/article/details/108764205" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-6.control\"}","dist_request_id":"","index":"6","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/zhangnipa/article/details/108764205"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-6.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-6.control'>
+					关于<em>ascii</em><em>编码</em>的<em>原理</em>，特征及用途
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/zhangnipa" target="_blank"><span class="blog-title">zhangnipa的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					994
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/zhangnipa/article/details/108764205" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-6.control\"}","dist_request_id":"","index":"6","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/zhangnipa/article/details/108764205"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-6.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-6.control'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>ASCII</em><em>编码</em>
+<em>ASCII</em>简述
+
+ <em>ASCII</em> ((American Standard Code for Information Interchange): 美国信息交换标准代码）是基于拉丁字母的一套电脑<em>编码</em>系统，主要用于显示现代英语和其他西欧语言。它是最通用的信息交换标准，并等同于国际标准ISO/IEC 646。<em>ASCII</em>第一次以规范标准的类型发表是在1967年，最后一次更新则是在19<em>8</em>6年，到目前为止共定义了12<em>8</em>个<em>字符</em>。 
+<em>ASCII</em>诞生原因
+
+在计算机中，所有的数据在存储和运算时都要使用二进制数表示</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_37711738/article/details/89575132"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-7.control\"}","dist_request_id":"","index":"7","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/weixin_37711738/article/details/89575132"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_37711738/article/details/89575132" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-7.control\"}","dist_request_id":"","index":"7","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/weixin_37711738/article/details/89575132"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-7.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-7.control'>
+					几种简单的<em>编码</em>（为什么使用<em>ASCII</em>码）
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_37711738" target="_blank"><span class="blog-title">weixin_37711738的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-26</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2801
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_37711738/article/details/89575132" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-7.control\"}","dist_request_id":"","index":"7","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/weixin_37711738/article/details/89575132"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-7.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-7.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">二-十进制码（BCD码）
+在目前的数字系统中，一般是采用二进制数进行运算的，但是由于人们习惯采用十进制数，因此常需进行十进制数和二进制数之间的转换，其转换方法上面已讨论过了。为了便于数字系统处理十进制数，经常还采用<em>编码</em>的方法，即以若干位二进制码来表示1位十进制数，这种代码称为二进制<em>编码</em>的十进制数，简称二-十进制码，或BCD码（Binary Coded Decimal Codes）。
+因为十进制数...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://zheng.blog.csdn.net/article/details/95161014"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-8.control\"}","dist_request_id":"","index":"8","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://zheng.blog.csdn.net/article/details/95161014"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://zheng.blog.csdn.net/article/details/95161014" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-8.control\"}","dist_request_id":"","index":"8","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://zheng.blog.csdn.net/article/details/95161014"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control'>
+					计算机组成<em>原理</em> &mdash;&mdash; <em>ASCII</em>码、汉字的表示和<em>编码</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/starter_____" target="_blank"><span class="blog-title">starter_____的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-09</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1013
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://zheng.blog.csdn.net/article/details/95161014" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-8.control\"}","dist_request_id":"","index":"8","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://zheng.blog.csdn.net/article/details/95161014"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">一、<em>ASCII</em>码
+
+
+二、汉字的表示和<em>编码</em>
+汉字的<em>编码</em>包括汉字的输入<em>编码</em>、汉字内码、汉字字形码
+区位码和国标码都是输入码，它们和汉字内码的关系如下
+国标码=（区位码）16+2020H国标码=（区位码）_{16}+2020H国标码=（区位码）16​+2020H
+汉字内码=（国标码）16+<em>8</em>0<em>8</em>0H汉字内码=（国标码）_{16}+<em>8</em>0<em>8</em>0H汉字内码=（国标码）16​+<em>8</em>0<em>8</em>0H
+
+三、<em>字符</em>串的存放
+
+...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/liutianshx2012/article/details/82225999"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-9.control\"}","dist_request_id":"","index":"9","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/liutianshx2012/article/details/82225999"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/liutianshx2012/article/details/82225999" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-9.control\"}","dist_request_id":"","index":"9","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/liutianshx2012/article/details/82225999"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-9.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-9.control'>
+					计算机<em>字符</em><em>编码</em><em>原理</em> （个人理解）
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/liutianshx2012" target="_blank"><span class="blog-title">TTc &#39;s share</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-30</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1235
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/liutianshx2012/article/details/82225999" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-9.control\"}","dist_request_id":"","index":"9","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/liutianshx2012/article/details/82225999"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-9.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-9.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">&nbsp;
+
+没有中介，只有翻译。 就像两个国家人民交流一样，只需要找一个懂两国语言的翻译就可以了。
+
+而所有公认的<em>编码</em>，都是有标准的<em>编码</em>规则，所以在软件世界里，每个翻译都是全球通。
+
+下面是&ldquo;好&rdquo;字在<em>UTF-</em><em>8</em><em>编码</em>下转换成GBK<em>编码</em>的过程，每个过程都有显示它的存储字节（详见od命令输出）：
+
+&nbsp;
+
+TTc:Test ttc$ echo &quot;好&quot; &amp;gt; utf
+
+TTc:Test ttc$ file u...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/u014465934/article/details/80941064"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-10.control\"}","dist_request_id":"","index":"10","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/u014465934/article/details/80941064"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/u014465934/article/details/80941064" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-10.control\"}","dist_request_id":"","index":"10","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/u014465934/article/details/80941064"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-10.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-10.control'>
+					<em>字符</em>串<em>编码</em>：<em>ASCII</em>、GB系列、<em>Unicode</em>、<em>UTF-</em><em>8</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/u014465934" target="_blank"><span class="blog-title">yangyang的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-06</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					6383
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/u014465934/article/details/80941064" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-10.control\"}","dist_request_id":"","index":"10","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/u014465934/article/details/80941064"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-10.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-10.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">
+  对<em>字符</em>串<em>编码</em>进行汇总和区别
+
+
+<em>编码</em>的由来：
+
+计算机自己能理解的&ldquo;语言&rdquo;是二进制数，最小的信息标识是二进制数，<em>8</em>个二进制位表示一个字节；而我们人类所能理解的语言文字则是一套由英文字母、汉语汉字、标点符号<em>字符</em>、阿拉伯数字等等很多的<em>字符</em>构成的<em>字符</em>集。如果要让计算机来按照人类的意愿进行工作，则必须把人类所使用的这些<em>字符</em>集转换为计算机所能理解的二进制码，这个过程就是<em>编码</em>，他的逆过程称为解码。
+
+最...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/baimu2849/article/details/101626996"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-11.control\"}","dist_request_id":"","index":"11","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/baimu2849/article/details/101626996"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/baimu2849/article/details/101626996" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-11.control\"}","dist_request_id":"","index":"11","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/baimu2849/article/details/101626996"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-11.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-11.control'>
+					<em>ASCII</em>、<em>Unicode</em>和<em>UTF-</em><em>8</em>等常见<em>字符</em><em>编码</em>格式介绍
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/baimu2849" target="_blank"><span class="blog-title"></span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-12</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					256
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/baimu2849/article/details/101626996" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-11.control\"}","dist_request_id":"","index":"11","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/baimu2849/article/details/101626996"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-11.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-11.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">信息存储在计算机中是转换成二进制来存储的，二进制的发明据说是来源于中国阴阳八卦。后德国数理哲学大师莱布尼茨是最早接触中华文化的欧洲人之一，从他的传教士朋友鲍威特寄给他的拉丁文译本《易经》中，读到了八卦的组成结构，惊奇地发现其基本素数0和1。在莱布尼茨眼中，&ldquo;阴&rdquo;与&ldquo;阳&rdquo;基本上就是他的二进制的中国版。他曾断言言：&ldquo;二进制乃是具有世界普遍性的、最完美的逻辑、最先进语言&rdquo;
+计算机存储单位一般...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/birdbug/article/details/5540038"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-12.control\"}","dist_request_id":"","index":"12","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/birdbug/article/details/5540038"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/birdbug/article/details/5540038" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-12.control\"}","dist_request_id":"","index":"12","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/birdbug/article/details/5540038"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-12.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-12.control'>
+					关于<em>字符</em><em>编码</em>的基本<em>原理</em>思考
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/birdbug" target="_blank"><span class="blog-title">birdbug的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-28</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					417
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/birdbug/article/details/5540038" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-12.control\"}","dist_request_id":"","index":"12","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/birdbug/article/details/5540038"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-12.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-12.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">在电脑的世界里，所有的信息其实都是由1，0这样的比特流组成的。有时候我们可能会听到某些大牛的嘴里冒出一些词，比如说字节、字。那1、0这样的比特位与字节、字有什么样的关系呢？其实，它们的关系，取决于你从什么角度去看。1、如果从信息的本质角度来看，信息就是有1、0这样的比特流构成的。2、如果从存储的角度来看，字节是存储的最小单元。其中，一个字节等于<em>8</em>个比特位（1、0）。3、如果</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/Fancy116611/article/details/80318741"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-13.control\"}","dist_request_id":"","index":"13","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/Fancy116611/article/details/80318741"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/Fancy116611/article/details/80318741" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-13.control\"}","dist_request_id":"","index":"13","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/Fancy116611/article/details/80318741"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-13.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-13.control'>
+					【底层<em>原理</em>】<em>字符</em><em>编码</em>笔记：<em>ASCII</em>，<em>Unicode</em> 和 <em>UTF-</em><em>8</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/Fancy116611" target="_blank"><span class="blog-title">Fancy116611的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-15</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					372
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/Fancy116611/article/details/80318741" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-13.control\"}","dist_request_id":"","index":"13","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/Fancy116611/article/details/80318741"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-13.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-13.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">文章来源：码农有道作者&nbsp;阮一峰今天中午，我突然想搞清楚&nbsp;<em>Unicode</em>&nbsp;和&nbsp;<em>UTF-</em><em>8</em>&nbsp;之间的关系，就开始查资料。这个问题比我想象的复杂，午饭后一直看到晚上9点，才算初步搞清楚。下面就是我的笔记，主要用来整理自己的思路。我尽量写得通俗易懂，希望能对其他朋友有用。毕竟，<em>字符</em><em>编码</em>是计算机技术的基石，想要熟练使用计算机，就必须懂得一点<em>字符</em><em>编码</em>的知识。<em>ASCII</em><em>编码</em>我们知道，计算机内部，所有信息最终都是一...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/u010771437/article/details/42102359"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-14.control\"}","dist_request_id":"","index":"14","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/u010771437/article/details/42102359"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/u010771437/article/details/42102359" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-14.control\"}","dist_request_id":"","index":"14","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/u010771437/article/details/42102359"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-14.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-14.control'>
+					<em>字符</em><em>编码</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/u010771437" target="_blank"><span class="blog-title">Huohuo</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">12-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					434
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/u010771437/article/details/42102359" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-14.control\"}","dist_request_id":"","index":"14","strategy":"2~default~BlogCommendFromMachineLearnPai2~default","dest":"https://blog.csdn.net/u010771437/article/details/42102359"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-14.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-14.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">因为计算机只能处理数字，如果要处理文本，就必须先把文本转换为数字才能处理。最早的计算机在设计时采用<em>8</em>个比特（bit）作为一个字节（byte），所以，一个字节能表示的最大的整数就是255（二进制11111111=十进制255），如果要表示更大的整数，就必须用更多的字节。比如两个字节可以表示的最大整数是65535，4个字节可以表示的最大整数是4294967295。
+
+由于计算机是美国人发明的，因此</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/dhbfjh/article/details/100537627"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-15.control\"}","dist_request_id":"","index":"15","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/dhbfjh/article/details/100537627"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/dhbfjh/article/details/100537627" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-15.control\"}","dist_request_id":"","index":"15","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/dhbfjh/article/details/100537627"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-15.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-15.control'>
+					<em>ASCII</em>码,hex<em>编码</em>,String<em>字符</em>串相互转化及<em>原理</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/dhbfjh" target="_blank"><span class="blog-title">那你为何对我三笑留情的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-04</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1677
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/dhbfjh/article/details/100537627" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-15.control\"}","dist_request_id":"","index":"15","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/dhbfjh/article/details/100537627"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-15.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-15.control'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>ASCII</em>码,hex<em>编码</em>,String<em>字符</em>串相互转化及<em>原理</em><em>ASCII</em>:是基于拉丁字母的一套电脑<em>编码</em>系统，主要用于显示现代英语和其他西欧语言.我们关心的是数字和字母:4<em>8</em>～57为0到9十个阿拉伯数字;65～90为26个大写英文字母,97～122号为26个小写英文字母功能快捷键合理的创建标题，有助于目录的生成如何改变文本的样式插入链接与图片如何插入一段漂亮的代码片生成一个适合你的列表创建一个表格设定内...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/u012278016/article/details/79840157"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-16.control\"}","dist_request_id":"","index":"16","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/u012278016/article/details/79840157"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/u012278016/article/details/79840157" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-16.control\"}","dist_request_id":"","index":"16","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/u012278016/article/details/79840157"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-16.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-16.control'>
+					3<em>字符</em><em>编码</em>和字库<em>原理</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/u012278016" target="_blank"><span class="blog-title">哲学天空的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-10</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					914
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/u012278016/article/details/79840157" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-16.control\"}","dist_request_id":"","index":"16","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/u012278016/article/details/79840157"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-16.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-16.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">//<em>字符</em>1&amp;gt;:<em>字符</em>(Character)：是各种文字和符号的总称，包括各国家文字、标点符号、图形符号、数字等。&nbsp;2&amp;gt;:<em>字符</em>集(Character set)：是多个<em>字符</em>的集合，<em>字符</em>集种类较多，每个<em>字符</em>集包含的<em>字符</em>个数不同，常见<em>字符</em>集名称：<em>ASCII</em><em>字符</em>集、GB2312<em>字符</em>集、BIG5<em>字符</em>集、 GB1<em>8</em>030<em>字符</em>集、<em>Unicode</em><em>字符</em>集等。&nbsp;3&amp;gt;:<em>ASCII</em><em>字符</em>集：（American...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/iteye_8584/article/details/81580829"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-17.control\"}","dist_request_id":"","index":"17","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/iteye_8584/article/details/81580829"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/iteye_8584/article/details/81580829" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-17.control\"}","dist_request_id":"","index":"17","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/iteye_8584/article/details/81580829"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-17.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-17.control'>
+					<em>字符</em><em>编码</em><em>原理</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/iteye_8584" target="_blank"><span class="blog-title">hitqiang</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					69
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/iteye_8584/article/details/81580829" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-17.control\"}","dist_request_id":"","index":"17","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/iteye_8584/article/details/81580829"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-17.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-17.control'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>编码</em><em>字符</em>集与乱码问题根源之所在 
+本文介绍了<em>编码</em><em>字符</em>集的概念以及Java与<em>编码</em><em>字符</em>集之间的关系，文章的内容来自于本人工作过程中的经验积累以及网络中的相关文章介绍，如果文章中有任何纰漏欢迎读者指正，让我们共同讨论学习J
+1．      <em>字符</em>
+<em>字符</em>是抽象的最小文本单位。它没有固定的形状（可能是一个字形），而且没有值。&ldquo;A&rdquo;是一个<em>字符</em>，&ldquo;&euro;&rdquo;（德国、法国和许多其他欧洲国家通用货币的标志）也是一个字...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/sunxboy/article/details/83230434"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-18.control\"}","dist_request_id":"","index":"18","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/sunxboy/article/details/83230434"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/sunxboy/article/details/83230434" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-18.control\"}","dist_request_id":"","index":"18","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/sunxboy/article/details/83230434"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-18.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-18.control'>
+					java<em>字符</em><em>编码</em><em>原理</em>解析(转)
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/sunxboy" target="_blank"><span class="blog-title">sunxboy的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					247
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/sunxboy/article/details/83230434" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-18.control\"}","dist_request_id":"","index":"18","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/sunxboy/article/details/83230434"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-18.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-18.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">可以理解为计算机没有<em>字符</em>的概念，只有字节。<em>字符</em>是存在于人类语言层的概念，其作用是为了人与人之间的交流，因为字节对于人类是不可读的,但是计算机存储所有的数据都是按照字节存储。
+因
+此要将人类意识中的<em>字符</em>存储到计算机中，则必须将<em>字符</em>转换为字节数据，那么怎么转化呢，则必须要一种映射规则，这里的映射规则就是通常意义中的<em>字符</em><em>编码</em>，
+比如说该文件是GBK<em>编码</em>，可以说为:这个文档中的<em>字符</em>数据是按照GBK这种<em>字符</em>...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/shangqiao/article/details/1546549"  data-report-view='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-19.control\"}","dist_request_id":"","index":"19","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/shangqiao/article/details/1546549"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/shangqiao/article/details/1546549" class="tit ellipsis-online ellipsis-online-1" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-19.control\"}","dist_request_id":"","index":"19","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/shangqiao/article/details/1546549"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-19.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-19.control'>
+					java<em>字符</em><em>编码</em><em>原理</em>解析
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/shangqiao" target="_blank"><span class="blog-title">shangqiao的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-30</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1735
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/shangqiao/article/details/1546549" target="_blank"  data-report-click='{"ab":"new","mod":"popu_387","extra":"{\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~default-19.control\"}","dist_request_id":"","index":"19","strategy":"2~default~BlogCommendFromBaidu~default","dest":"https://blog.csdn.net/shangqiao/article/details/1546549"}'  data-report-query='utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-19.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-19.control'>
+				<div class="desc ellipsis-online ellipsis-online-1">什么是<em>字符</em>，什么是字节?可以理解为计算机没有<em>字符</em>的概念，只有字节。<em>字符</em>是存在于人类语言层的概念，其作用是为了人与人之间的交流，因为字节对于人类是不可读的,但是计算机存储所有的数据都是按照字节存储。因此要将人类意识中的<em>字符</em>存储到计算机中，则必须将<em>字符</em>转换为字节数据，那么怎么转化呢，则必须要一种映射规则，这里的映射规则就是通常意义中的<em>字符</em><em>编码</em>，比如说该文件是GBK<em>编码</em>，可以说为:这个文档中的<em>字符</em>数</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+            <div class="template-box">
+                <span>©️2020 CSDN</span>
+                <span>皮肤主题: 大白</span>
+                <span> 设计师:CSDN官方博客</span>
+                <span>
+                    <a href="https://blog.csdn.net/" class="back-home c-blue c-blue-hover c-blue-focus">返回首页</a>
+                </span>
+            </div>
+<div class="blog-footer-bottom" style="margin-top:10px;"></div>
+<script__ src="https://g.csdnimg.cn/common/csdn-footer/csdn-footer.js" data-isfootertrack="false" type="text/javascript"></script__>
+<script__ type="text/javascript">
+    window.csdn.csdnFooter.options = {
+        el: '.blog-footer-bottom',
+        type: 2
+    }
+</script__>        </main>
+<aside class="blog_container_aside">
+	<div id="asideProfile" class="aside-box">
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/qq_31753145" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4121","dest":"https://blog.csdn.net/qq_31753145","ab":"new"}'>
+                <img src="https://profile.csdnimg.cn/2/4/2/3_qq_31753145" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex flex-column profile-intro-name-box">
+            <div class="profile-intro-name-boxTop">
+                <a href="https://blog.csdn.net/qq_31753145" class="" id="uid" title="康志" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4122","dest":"https://blog.csdn.net/qq_31753145","ab":"new"}'>
+                    <span class="name " username="qq_31753145">康志</span>
+                </a>
+                <span>
+                </span>
+                <span class="flag expert-blog">
+                <span class="bubble">CSDN认证博客专家</span>
+                </span>
+                <span class="flag company-blog">
+                <span class="bubble">CSDN认证企业博客</span>
+                </span>
+            </div>
+            <div class="profile-intro-name-boxFooter">
+                <span class="personal-home-page personal-home-years">码龄5年</span>
+                    <span class="personal-home-page">
+                    <a class="personal-home-certification" href="https://i.csdn.net/#/uc/profile?utm_source=14998968" target="_blank" title="暂无认证">
+                    <img src="https://csdnimg.cn/identity/nocErtification.png" alt="">
+                    暂无认证
+                    </a>
+                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="27">
+            <a href="https://blog.csdn.net/qq_31753145" data-report-click='{"mod":"1598321000_001","spm":"1001.2101.3001.4310"}' data-report-query="t=1">  
+                <dt><span class="count">27</span></dt>
+                <dd class="font">原创</dd>
+            </a>
+        </dl>
+        <dl class="text-center" data-report-click='{"mod":"1598321000_002","spm":"1001.2101.3001.4311"}' title="194748">
+            <a href="https://blog.csdn.net/rank/list/weekly" target="_blank">
+                <dt><span class="count">19万+</span></dt>
+                <dd class="font">周排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" title="98878">
+            <a href="https://blog.csdn.net/rank/list/total" data-report-click='{"mod":"1598321000_003","spm":"1001.2101.3001.4312"}' target="_blank">
+                <dt><span class="count">9万+</span></dt>
+                <dd class="font">总排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" style="min-width:58px" title="82378">  
+            <dt><span class="count">8万+</span></dt>
+            <dd>访问</dd>
+        </dl>
+        <dl class="text-center" title="4级,点击查看等级说明">
+            <dt><a href="https://blog.csdn.net/blogdevteam/article/details/103478461" target="_blank">
+                <img class="level" src="https://csdnimg.cn/identity/blog4.png">
+            </a>
+            </dt>
+            <dd>等级</dd>
+        </dl>
+    </div>
+    <div class="item-rank"></div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="1112">
+            <dt><span class="count">1112</span></dt>
+            <dd>积分</dd>
+        </dl>
+         <dl class="text-center" id="fanBox" title="22">
+            <dt><span class="count" id="fan">22</span></dt>
+            <dd>粉丝</dd>
+        </dl>
+        <dl class="text-center" title="34">
+            <dt><span class="count">34</span></dt>
+            <dd>获赞</dd>
+        </dl>
+        <dl class="text-center" title="4">
+            <dt><span class="count">4</span></dt>
+            <dd>评论</dd>
+        </dl>
+        <dl class="text-center" title="26">
+            <dt><span class="count">26</span></dt>
+            <dd>收藏</dd>
+        </dl>
+    </div>
+    <div class="profile-intro-name-boxOpration">
+        <div class="opt-letter-watch-box">
+        <a class="bt-button personal-letter" href="https://im.csdn.net/chat/qq_31753145" target="_blank" rel="noopener">私信</a>
+        </div>
+        <div class="opt-letter-watch-box"> 
+            <a class="personal-watch bt-button" id="btnAttent" >关注</a>  
+        </div>
+    </div>
+</div>
+<div id="asideSearchArticle" class="aside-box">
+	<div class="aside-content search-comter">
+    <div class="aside-search aside-search-blog">         
+        <input type="text" class="input-serch-blog" name="" autocomplete="off" value="" id="search-blog-words" placeholder="搜博主文章">
+        <a class="btn-search-blog">
+                    <img src="//csdnimg.cn/cdn/content-toolbar/csdn-sou.png?v=1587021042">
+        </a>
+    </div>
+    </div>
+</div>
+
+
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/qq_31753145/article/details/50899119" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/qq_31753145/article/details/50899119","ab":"new"}'>
+				线程池的原理及实现
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">15120</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/qq_31753145/article/details/51422929" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/qq_31753145/article/details/51422929","ab":"new"}'>
+				Android - 解决国内不能从google代理服务器更新下载问题
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">6721</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/qq_31753145/article/details/51277430" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/qq_31753145/article/details/51277430","ab":"new"}'>
+				Android最佳性能实践(三)——高性能编码优化
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">4451</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/qq_31753145/article/details/51277413" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/qq_31753145/article/details/51277413","ab":"new"}'>
+				Android最佳性能实践(二)——分析内存的使用情况
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">4446</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/qq_31753145/article/details/51131049" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/qq_31753145/article/details/51131049","ab":"new"}'>
+				android计算手机的分辨率/像素/密度/屏幕尺寸/DPI值的方法
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">4420</span>
+                </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideCategory" class="aside-box ">
+    <h3 class="aside-title">分类专栏</h3>
+    <div class="aside-content">
+        <ul>
+            <li class="">
+                <a class="clearfix" target="_blank" href="https://blog.csdn.net/qq_31753145/category_6109404.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/qq_31753145/category_6109404.html","ab":"new"}'>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        <span class="text">Android</span>
+                    </span>
+                    <span class="count float-right">80篇</span>
+                </a>
+            </li>
+            <li class="">
+                <a class="clearfix" target="_blank" href="https://blog.csdn.net/qq_31753145/category_6136043.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/qq_31753145/category_6136043.html","ab":"new"}'>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        <span class="text">线程池的原理及实现</span>
+                    </span>
+                </a>
+            </li>
+            <li class="">
+                <a class="clearfix" target="_blank" href="https://blog.csdn.net/qq_31753145/category_6237850.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/qq_31753145/category_6237850.html","ab":"new"}'>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756926.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        <span class="text">Activity中的onSaveInstanceState()解析</span>
+                    </span>
+                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_31753145/article/details/51422929#comments_15530100" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/51422929#comments_15530100","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/51422929#comments_15530100","ab":"new"}'>Android - 解决国内不能从google代理服务器更新下载问题</a>
+                <p class="comment ellipsis">
+                    <a href="https://letmefly.blog.csdn.net" class="user-name" target="_blank">Tisfy: </a>
+                    <span class="code-comments">真棒！就像：灯前目力虽非昔，犹课蝇头二万言。</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_31753145/article/details/51313323#comments_6023764" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/51313323#comments_6023764","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/51313323#comments_6023764","ab":"new"}'>Android事件分发机制完全解析(终极版)</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/qq_31753145" class="user-name" target="_blank">康志: </a>
+                    <span class="code-comments">多谢　与君共勉~~</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_31753145/article/details/51313323#comments_6023522" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/51313323#comments_6023522","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/51313323#comments_6023522","ab":"new"}'>Android事件分发机制完全解析(终极版)</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/wl332197858" class="user-name" target="_blank">wl332197858: </a>
+                    <span class="code-comments">楼主好6逼</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_31753145/article/details/50760818#comments_5950823" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/50760818#comments_5950823","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/qq_31753145/article/details/50760818#comments_5950823","ab":"new"}'>Android Fragment完全解析，关于碎片你所需知道的一切</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/songlinjiang" class="user-name" target="_blank">SoGa江: </a>
+                    <span class="code-comments">赞一个！</span>
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideArchive" class="aside-box" style="display:block!important; width:300px;">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix">
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/qq_31753145/article/details/51604903" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/qq_31753145/article/details/51604903","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/qq_31753145/article/details/51604903","ab":"new"}'>Android事件分发机制完全解析(终极版二)</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/qq_31753145/article/details/51460663" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/qq_31753145/article/details/51460663","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/qq_31753145/article/details/51460663","ab":"new"}'>Activity中的onSaveInstanceState()解析</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/qq_31753145/article/details/51422929" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/qq_31753145/article/details/51422929","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/qq_31753145/article/details/51422929","ab":"new"}'>Android - 解决国内不能从google代理服务器更新下载问题</a>
+            </li>
+        </ul>
+        <div class="archive-bar"></div>
+        <div class="archive-box">
+                <div class="archive-list-item"><a href="https://blog.csdn.net/qq_31753145/article/month/2016/06" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":""}'><span class="year">2016年</span><span class="num">82篇</span></a></div>
+        </div>
+    </div>
+</div>
+	<div id="footerRightAds" class="isShowFooterAds">
+		<div class="aside-box">
+			<div id="kp_box_57" data-pid="57"><script__ async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script__>
+<!-- PC-博客详情页-左下视窗（300*600） -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="1173711872"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script__>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script__><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=57&a=2488&c=0&k=&spm=1001.2101.3001.5001&d=1&t=3&u=8a6c7914a1f3405a8fb2791fa5911f34" style="display: block;width: 0px;height: 0px;"></div>
+		</div>
+	</div>
+    <!-- 详情页显示目录 -->
+<!--文章目录-->
+<div id="asidedirectory" class="aside-box">
+    <div class='groupfile' id="directory">
+        <h3 class="aside-title">目录</h3>
+        <div class="align-items-stretch group_item">
+            <div class="pos-box">
+            <div class="scroll-box">
+                <div class="toc-box"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</aside>
+<script__>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).parents("p.text-center").remove();
+	})
+</script__>
+<script__ type="text/javascript"  src="https://g.csdnimg.cn/user-tooltip/2.4/user-tooltip.js"></script__>
+<script__ type="text/javascript"  src="https://g.csdnimg.cn/user-medal/1.0.6/user-medal.js"></script__>    </div>
+<div class="recommend-right  align-items-stretch clearfix" id="rightAside" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right" >
+                        <div class='flex-column aside-box groupfile' id="groupfile">
+                <div class="groupfile-div">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+                <div id="recommendAdBox">
+                    <div id="kp_box_479" data-pid="479"><script__ async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script__>
+<!-- PC-博客详情页-右侧视窗300*600 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="8441704093"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script__>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script__><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=479&a=2487&c=0&k=&spm=1001.2101.3001.4834&d=1&t=3&u=f4eb8e9e07ae446691adf13565421e15" style="display: block;width: 0px;height: 0px;"></div>
+                </div>
+            <div class='aside-box kind_person d-flex flex-column'>
+                    <h3 class="aside-title">分类专栏</h3>
+                    <div class="align-items-stretch kindof_item" id="kind_person_column">
+                        <div class="aside-content">
+                            <ul>
+                                <li class="">
+                                    <a class="clearfix" target="_blank" href="https://blog.csdn.net/qq_31753145/category_6109404.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/qq_31753145/category_6109404.html","ab":"new"}'>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="title oneline">
+                                            <span class="text">Android</span>
+                                        </span>
+                                        <span class="count float-right">80篇</span>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a class="clearfix" target="_blank" href="https://blog.csdn.net/qq_31753145/category_6136043.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/qq_31753145/category_6136043.html","ab":"new"}'>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="title oneline">
+                                            <span class="text">线程池的原理及实现</span>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a class="clearfix" target="_blank" href="https://blog.csdn.net/qq_31753145/category_6237850.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/qq_31753145/category_6237850.html","ab":"new"}'>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756926.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="title oneline">
+                                            <span class="text">Activity中的onSaveInstanceState()解析</span>
+                                        </span>
+                                        <span class="count float-right">1篇</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+</div>
+<div class="mask-dark"></div>
+<script__ type="text/javascript">
+    var timert = setInterval(function(){
+      sideToolbar = $(".csdn-side-toolbar");
+      if (sideToolbar.length > 0) {
+        sideToolbar.css('cssText','bottom:64px !important;')
+        clearInterval(timert);
+      }
+    }, 200);
+</script__>
+<script__>
+    var articleId = 51259711;
+    var commentscount = 0;
+    var curentUrl = "https://blog.csdn.net/qq_31753145/article/details/51259711";
+    var myUrl = "https://my.csdn.net/";
+    var highlight = ["字符","编码","原理","ASCII","Unicode","UTF-","8"];//高亮数组
+    var isRecommendModule = true;
+    var isBaiduPre = true;
+    var baiduCount = 2;
+    var share_card_url = "https://blog.csdn.net/qq_31753145/article/shareArticleCardPage?article_id=51259711"
+	var articleType = 1;
+    var baiduKey = "字符编码原理 ASCII，Unicode和UTF-8";
+    var userNewReport = false;
+    var needInsertBaidu = true;
+    var recommendRegularDomainArr = ["blog.csdn.net/.+/article/details/","download.csdn.net/download/","edu.csdn.net/course/detail/","ask.csdn.net/questions/","bbs.csdn.net/topics/","www.csdn.net/gather_.+/"]
+    var codeStyle = "";
+    var baiduSearchType = "title";
+    var canRead = true;
+    var blogMoveHomeArticle = false;
+    var showPcWindowAd = false;
+    var showSearchText = "";
+    var linkPage = true;
+    var articleSource = 1;
+    var articleReport = '{"pid": "blog", "spm":"1001.2101"}';
+</script__>
+<script__ src="https://csdnimg.cn/public/sandalstrap/1.4/js/sandalstrap.min.js"></script__>
+<div class="skin-boxshadow"></div>
+ 
+</body>
+    <!-- 富文本柱状图  -->
+	<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css"/>
+	<script__ type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/lib/chart.min.js"></script__>
+    <script__ type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/widget2chart.js"></script__>
+<script__ src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_highlight-db1e81323a.min.js" type="text/javascript"></script__>
+<script__ src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_common-906586e915.min.js" type="text/javascript"></script__>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-light.css">
+<script__>
+ // 全局声明
+ if (window.csdn === undefined) {
+      window.csdn = {};
+    }
+    window.csdn.sideToolbar = {
+        options: {
+            report:{
+                isShow: true,
+            },
+            qr: {
+                isShow: false,
+            },
+            guide: {
+                isShow: true
+            }
+        }
+    }
+    $(function(){
+        $(document).on('click',"a.option-box[data-type='report']",function() {
+            window.csdn.userLogin.loadAjax(function(res){
+                if(userNewReport){
+                    showReportNew(false,articleTitles);
+                }else{
+                    showReport(false,articleTitles);
+                }
+            })
+        });
+    })
+</script__>
+    <script__ src="https://g.csdnimg.cn/baidu-search/1.0.9/baidu-search.js"  type="text/javascript"></script__>
+<script__ src="https://csdnimg.cn/release/download/old_static/js/qrcode.js"></script__>
+<script__ src="https://csdnimg.cn/release/blogv2/dist/pc/js/common-b286f966c8.min.js" type="text/javascript"></script__>
+<script__ src="https://csdnimg.cn/release/blogv2/dist/pc/js/detail-180dec70dc.min.js" type="text/javascript"></script__>
+<script__ src="https://g.csdnimg.cn/user-ordercart/1.0.6/user-ordercart.js" type="text/javascript"></script__>
+<script__ src="https://csdnimg.cn/release/blogv2/dist/pc/js/column-78261cfea6.min.js" type="text/javascript"></script__>
+<script__ src="https://g.csdnimg.cn/side-toolbar/3.0/side-toolbar.js" type="text/javascript"></script__>
+<script__ src="https://g.csdnimg.cn/common/shop-window/shop-window.js" type="text/javascript"></script__>
+<script__ src="https://g.csdnimg.cn/copyright/1.0.3/copyright.js" type="text/javascript"></script__>
+<script__>
+    $(".MathJax").remove();
+    if ($('div.markdown_views pre.prettyprint code.hljs').length > 0) {
+        $('div.markdown_views')[0].className = 'markdown_views';
+    }
+</script__>
+<script__ type="text/javascript" src="https://csdnimg.cn/release/blog_mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script__>
+<script__ type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            "HTML-CSS": {
+                    linebreaks: { automatic: true, width: "94%container" },
+                    imageFont: null
+            },
+            tex2jax: {
+                preview: "none"
+            },
+            mml2jax: {
+                preview: 'none'
+            }
+    });
+</script__>
+<script__ type="text/javascript" crossorigin src="https://g.csdnimg.cn/user-login/2.3.2/user-login.js"></script__>
+<script__ type="text/javascript" crossorigin src="https://g.csdnimg.cn/login-box/1.1.4/login-box.js"></script__></html>

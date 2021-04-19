@@ -1,0 +1,8 @@
+nmap s :w <CR>
+vmap s :w <CR>
+
+"nmap s :call SaveFile() <CR>
+"vmap s :call SaveFile() <CR>
+func! SaveFile()
+		exec "w"
+endfunc	

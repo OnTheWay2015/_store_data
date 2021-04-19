@@ -1,0 +1,13 @@
+ db.printlog.drop();
+db.getCollection('bbbb').find({}).forEach(function(item){
+    var _str = item._id.toString().substr(10, 8);
+    var _date = new Date(Number(parseInt(_str, 16).toString() + '000'));  // parseInt(_str, 16) 字符串是十六进制的, 字符串前面不用带0x
+     db.printlog.save({createTime:_date,GameId:item.GameId,RoomId:item.RoomId,Per:item.Per});
+
+})
+ db.printlog.find();
+
+
+//要打印的数据放入 things, 用查询的方式打印结果
+//  for( var i = 1; i < 10; i++ ) db.things.save( { x:4, j:i } );  
+//  db.things.find();

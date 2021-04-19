@@ -1,0 +1,56 @@
+【活跃】张小三(1579863018)  11:39:52
+Windows用的都是ANSI编码
+
+【活跃】张小三(1579863018)  11:40:02
+UTF-x属于残废
+
+【活跃】张小三(1579863018)  11:40:25
+虽然代码都是UTF-x，但是编译到程序都变成了ANSI
+
+【活跃】张小三(1579863018)  11:40:30
+（就是GBK
+
+
+
+可设置一下源码字符集（编码）和目标程序字符集（编码）
+
+
+
+https://blog.csdn.net/a3192048/article/details/82154194
+
+字符变量的字符编码是由操作系统的字符集和前缀L来决定的：
+
+1> 如果字符串常量前面如果有标识L，则无论系统的字符集是什么，被此字符串赋值的变量的内容都是Unicode编码的。编译器会将在cpp文件中以GBK编码保存的“中”字对应的Unicode编码的值0x4E2D赋值给字符串变量。
+
+2> 如果字符串常量前面没有标识L，那么被此字符串赋值的变量的内容是编译器默认字符集编码方式（VS编译器默认的字符集是操作系统的字符集，即为GBK）。
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ std::string utf8_to_unicode(std::string src)
+{
+	std::string tar;
+	size_t sz = src.size();
+	size_t nsz = 2*sz / 3;
+	tar.resize(nsz);
+	char* psrc = const_cast<char*>( src.c_str());
+	char* ptar  = const_cast<char*>( tar.c_str());
+	for (int i=0;i<sz;i+= 3)
+	{
+		char* uchar = ptar + 2*(i/3);
+		uchar[1] = ((psrc[i] & 0x0F) << 4) + ((psrc[i+1] >> 2) & 0x0F);
+		uchar[0] = ((psrc[i+1] & 0x03) << 6) + (psrc[i+2] & 0x3F);
+	}
+	return tar;
+}
