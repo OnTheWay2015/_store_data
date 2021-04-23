@@ -1,0 +1,63 @@
+
+函数功能：该函数将虚拟键消息转换为字符消息。字符消息被寄送到调用线程的消息队列里,当下一次线程调用函数GetMessage或PeekMessage时被读出。
+函数原型：
+	BOOL TranslateMessage( CONST MSG*lpMsg ); 
+	
+IpMsg：指向含有消息的MSG结构的指针,该结构里含有用函数GetMessage或PeekMessage从调用线程的消息队列里取得的消息信息。
+返回值：如果消息被转换（即,字符消息被寄送到调用线程的消息队列里）,返回非零值。
+		如果消息是 WM_KEYDOWN,WM_KEYUP WM_SYSKEYDOWN 或 WM_SYSKEYUP,返回非零值,不考虑转换。
+		如果消息没被转换（即,字符消息没被寄送到调用线程的消息队列里）,返回值是零。
+
+比如：
+
+	消息 WM_KEYDOWN 和 WM_KEYUP 组合产生一个 WM_CHAR 或 WM_DEADCHAR 消息。
+	消息 WM_SYSKEYDOWN 和 WM_SYSKEYUP 组合产生一个 WM_SYSCHAR 或 WM_SYSDEADCHAR 消息
+	然后放在队列中,等待下一次线程调用 GetMessage 或 PeekMessage 时被读出
+
+ 
+// 主消息循环: 
+    while (GetMessage(&msg, NULL, 0, 0))
+    {
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        {
+            if (msg.message==WM_KEYDOWN)
+            {
+                MessageBox(0, L"KeyDown1", 0, 0);
+            }
+            /*
+            WM_KEYDOWN和WM_KEYUP组合产生一个WM_CHAR或WM_DEADCHAR消息。
+            消息WM_SYSKEYDOWN和WM_SYSKEYUP组合产生一个WM_SYSCHAR或 WM_SYSDEADCHAR 消息
+            放在队列中,等待下一次线程调用GetMessage或PeekMessage时被读出
+
+            将虚拟键消息转换为字符消息。
+            字符消息被送到调用线程的消息队列中,在下一次线程调用函数GetMessage或PeekMessage时被读出。
+            */
+            TranslateMessage(&msg);    
+            GetMessage(&msg, NULL, 0, 0);
+            if (msg.message == WM_KEYDOWN)
+            {
+                MessageBox(0, L"KeyDown2", 0, 0);
+            }
+            if (msg.message == WM_CHAR){
+                MessageBox(0, L"Translate", 0, 0);
+            }
+
+            /*
+            该函数调度一个消息给窗口程序。通常调度从GetMessage取得的消息。
+            消息被调度到的窗口程序即是MainProc()函数
+            */
+            DispatchMessage(&msg);
+        }
+    }
+ 
+会发现按下一个键后会产生 WM_KEYDOWN 消息,经过 TranslateMessage 翻译后组合生成 WM_CHAR 消息
+
+然后投放到消息队列中,使用 getMessage 取出刚刚投放的消息,判断后,发现产生的是一个 WM_CHAR 消息。
+
+TtanslateMessage 函数仅为那些由键盘驱动器映射为 ASCII 字符的键产生 WM_CHAR 消息。
+
+但是 TranslateMessage 不会丢弃原来的 WM_KEYDOWN 消息。依旧可以继续调用函数:  WndProc(HWND, UINT, WPARAM, LPARAM)处理这个消息
+
+	case WM_KEYDOWN:
+			MessageBox(0, L"Key Down", 0, 0);
+			break;
