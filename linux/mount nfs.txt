@@ -1,0 +1,26 @@
+mount -t nfs 的使用
+服务安装：
+1. 在VMware Ubuntu中安装NFS服务：
+　　sudo apt-get install nfs-kernel-server
+2. 安装成功会出现配置文件/etc/exports。
+　　ls /etc/exports
+3. 配置vim exports
+
+指定所要共享的目录（绝对路径） *(rw,sync,no_root_squash)
+例：
+
+添加：
+/home/xubu/share/ *(rw,sync,no_root_squash,no_subtree_check)  //任意的客户端可连
+/home/xubu/share/   192.168.1.1(rw,sync,no_root_squash,no_subtree_check) //指定的客户端可连
+
+4. 重新启动nfs服务：
+sudo service nfs-kernel-server restart
+
+ 
+
+ 
+
+客户端接入：
+1. 确保与服务器的网络连接正常
+2. 挂载服务器的共享目录到本地目录
+sudo mount -t nfs 192.168.1.200(服务器地址):/home/xubu/share   /mnt(共享到该目录)
