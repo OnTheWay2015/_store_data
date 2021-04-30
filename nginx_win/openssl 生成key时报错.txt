@@ -1,0 +1,7 @@
+如果在执行上面的命令的时候出现以下错误：
+Unable to load config info from /usr/local/ssl/openssl.cnf
+
+这是因为openssl找不到对应配置文件，那么我们就需要弄到这个配置文件，如果你电脑安装了git的话，那么恭喜你，在git里面有这个文件，我们可以使用git下面的这个文件来执行上面的命令，修改一下，变成下面这样“
+
+1
+openssl req -new -key f:/work/server.key -out f:/work/server.csr -config "C:\Program Files\Git\mingw64\ssl\openssl.cnf"

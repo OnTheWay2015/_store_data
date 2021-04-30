@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin-when-crossorigin" />
+    <meta name="description" content="Windows下Nginx配置SSL实现Https访问（包含证书生成） 首先要说明为什么要实现https？ HTTP全名超文本传输协议，客户端据此获取服务器上的超文本内容。超文本内容则以HTML为主，" />
+    <meta property="og:description" content="Windows下Nginx配置SSL实现Https访问（包含证书生成） 首先要说明为什么要实现https？ HTTP全名超文本传输协议，客户端据此获取服务器上的超文本内容。超文本内容则以HTML为主，" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Windows下Nginx配置SSL实现Https访问（包含证书生成） - Vincent.李 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="https://common.cnblogs.com/css/blog-common.min.css?v=zS6-e1bxywlu3kpHvpr1J6MySwya3ztFtEnS7RYQ0Fk" />
+    <link id="MainCss" rel="stylesheet" href="https://common.cnblogs.com/skins/book/bundle-book.min.css?v=jeIWFbREsBywulLasTpkQaxky-lM6nSP4v7QSo89d0Y" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="https://common.cnblogs.com/skins/book/bundle-book-mobile.min.css?v=VScK2RSKmlDZjHFFPrzU6xRmTprJestCE7-RZpLjaKU" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/vincent-li666/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/vincent-li666/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/vincent-li666/wlwmanifest.xml" />
+    <script__>
+        var currentBlogId = 293899;
+        var currentBlogApp = 'vincent-li666';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'BOOK';
+        var visitorUserId = '';
+    </script__>
+        <script__>
+            var currentPostDateAdded = '2016-09-08 08:37';
+        </script__>
+    <script__ src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script__>
+    <script__ src="/js/blog-common.min.js?v=CJtNAb53Ex2fBes_h70ZUTUv5aZTxcvvM7mCnA44svE"></script__>
+    
+    
+    
+</head>
+<body class="has-navbar has-bannerbar">
+    <a name="top"></a>
+        <a target="_blank" href="https://www.aliyun.com/minisite/goods?userCode=swh7dvlt" onclick="ga('send', 'event', 'Link', 'click', 'aliyun-cps-blog-bannerbar-pc')">
+            <div class="bannerbar aliyun forpc" style="background-size: contain;background-image: url(https://img2020.cnblogs.com/blog/35695/202104/35695-20210428221933214-737067094.jpg)">
+            </div>
+        </a>
+        <div id="bannerbar" class="bannerbar-mobile formobile">
+            <a href="https://www.aliyun.com/minisite/goods?userCode=swh7dvlt" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'aliyun-cps-blog-bannerbar-mobile')">
+                <img src="https://img2020.cnblogs.com/blog/35695/202104/35695-20210428213541700-642740375.jpg" alt="" />
+            </a>
+        </div>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding"><a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a></li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔">
+                        <img id="new_post_icon" class="navbar-icon" src="/images/aggsite/newpost.svg" alt="写随笔" />
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=J0WS2P2iPgaIVgXxcAhliw4AFZIpaTWxtdoNAv9eiCA" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <img id="navbar_lite_mode_on" src="/images/lite-mode-check.svg" class="hide" /><span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    <script__ type="text/javascript">
+	try {
+		if (screen.availWidth > 1200) {
+			document.getElementById("MainCss").href = '/skins/book/bundle-book-2.min.css';
+		}
+	} catch (e) { }
+</script__>
+
+<div id="header">
+<div id="HeaderTitle">
+<div id="Title">
+<a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/vincent-li666/">Vincent.李</a>
+
+</div>
+<div id="subTitle"></div>
+</div>
+</div>
+
+
+<div id="main">
+	<div id="post_detail">
+    <div class="post">
+        <h2>
+            
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/vincent-li666/p/5851463.html">
+    <span>Windows下Nginx配置SSL实现Https访问（包含证书生成）</span>
+    
+
+
+
+</a>
+
+        </h2>
+        <div id="cnblogs_post_body" class="blogpost-body blogpost-body-html">
+<p><span style="font-size: 18pt"><strong>Windows下Nginx配置SSL实现Https访问（包含证书生成）</strong></span></p>
+<p><span style="font-size: 16px">　　首先要说明为什么要实现https？</span></p>
+<p><span style="font-size: 16px">　　HTTP全名超文本传输协议，客户端据此获取服务器上的超文本内容。超文本内容则以HTML为主，客户端拿到HTML内容后可根据规范进行解析呈现。因此，HTTP主要负责的是“内容的请求和获取”。问题就出在这部分。<strong>行监控、劫持、阻挡</strong>等行为很容易导致网站泄密，一些关键参数比如登录密码开发者会在客户端进行MD5加密，不过互联网所承载的机密信息远不只是密码，搜索内容同样属于敏感信息。现如今，百度、谷歌、Github等网站已经全站启用https，https就像是给网站上了一个“锁”，HTTPS做的就是给请求加密，让其对用户更加安全。对于自身而言除了保障用户利益外，还可避免本属于自己的流量被挟持，以保护自身利益。所以在我看来，终有一天HTTPS会实现全网普及。</span></p>
+<p><span style="font-size: 16px">　　下面进入正题。</span></p>
+<p><span style="font-size: 16px">　　<span style="color: rgba(0, 0, 255, 1)">说明：此教程适合已经配置好WNMP环境，并配置Virtualhost实现多站点的同学。如果您尚未配置，请参照我之前的文章进行配置。</span></span></p>
+<p><span style="font-size: 16px">　　实现Https首先需要向管理机构申请证书，而我们此次由于是练习目的，所以通过Openssl自己生成证书。首先我们需要用到生成证书的Openssl软件。</span></p>
+<p><span style="font-size: 16px">步骤：</span></p>
+<p><span style="font-size: 16px">1.&nbsp;安装Openssl</span></p>
+<p><span style="font-size: 16px">　　<span style="font-size: 14px">下载地址：<a title="Openssl下载地址" href="http://slproweb.com/products/Win32OpenSSL.html" target="_blank">http://slproweb.com/products/Win32OpenSSL.html</a>&nbsp;（根据系统选择32位或者64位版本下载安装）。</span><br></span></p>
+<p><span style="font-size: 14px">　　下载完成后，进行安装，我安装在了&nbsp;C:\wnmp\OpenSSL-Win64文件夹中。</span></p>
+<p><span style="font-size: 16px">2.&nbsp;安装ActivePerl （此软件目的为了解析pl文件，部分系统不安装也可以实现本教程的功能，安装该软件目的为了学习perl）。</span></p>
+<p><span style="font-size: 16px">　　<span style="font-size: 14px">下载地址：<a title="ActivePerl下载地址" href="http://www.activestate.com/activeperl/downloads/%20" target="_blank">http://www.activestate.com/activeperl/downloads/&nbsp;</a>&nbsp;（根据系统选择win32或者win64版本下载安装）。</span></span></p>
+<p><span style="font-size: 16px">3.&nbsp;配置环境变量</span></p>
+<p><span style="font-size: 16px">　　<span style="font-size: 14px">在环境变量中添加环境变量 </span></span></p>
+<p><span style="font-size: 14px">　　　　变量名： OPENSSL_HOME &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;变量值：C:\wnmp\OpenSSL-Win64\bin; &nbsp; &nbsp; &nbsp; &nbsp;（变量值为openssl安装位置）</span></p>
+<p><span style="font-size: 14px">　　　　在path变量结尾添加如下 ： %OPENSSL_HOME%;</span></p>
+<p><span style="font-size: 16px">4. 生成证书　　&nbsp;</span></p>
+<p><span style="font-size: 16px">　　（1） <span style="font-size: 14px">首先在 nginx安装目录中<span style="font-size: 16px">创建ssl文件夹</span>用于存放证书。比如我的文件目录为&nbsp;C:\wnmp\nginx\ssl</span></span></p>
+<p><span style="font-size: 14px">　　　　　以管理员身份进入命令行模式，进入ssl文件夹。 命令为：&nbsp;<strong><span style="color: rgba(255, 0, 255, 1)">cd &nbsp;c:/wnmp/nginx/ssl</span></strong></span></p>
+<p><span style="font-size: 16px">　　（2）&nbsp;创建私钥</span></p>
+<p><span style="font-size: 16px">　　　　　<span style="font-size: 14px">在命令行中执行命令：&nbsp;<strong><span style="color: rgba(255, 0, 255, 1)">openssl genrsa -des3 -out lee.key 1024 &nbsp; &nbsp; </span></strong><span style="color: rgba(255, 0, 255, 1)"><span style="color: rgba(0, 0, 0, 1)">（lee文件名可以自定义），如下图所示：</span></span></span></span></p>
+<p><span style="font-size: 16px"><span style="color: rgba(255, 0, 255, 1)"><span style="color: rgba(0, 0, 0, 1)">　　　　　　<img src="https://images2015.cnblogs.com/blog/844352/201609/844352-20160907224828051-420516602.png" alt=""></span></span></span></p>
+<p>　　　　　<span style="font-size: 14px">　输入密码后，再次重复输入确认密码。记住此密码，后面会用到。</span></p>
+<p>　　<span style="font-size: 16px">（3）创建csr证书</span></p>
+<p><span style="font-size: 16px">　　　　<span style="font-size: 14px">　在命令行中执行命令：&nbsp;&nbsp;<strong><span style="color: rgba(255, 0, 255, 1)">openssl req -new -key lee.key -out lee.csr</span></strong> &nbsp; &nbsp;（key文件为刚才生成的文件，lee为自定义文件名）</span></span></p>
+<p><span style="font-size: 16px"><span style="color: rgba(255, 0, 255, 1)"><span style="color: rgba(0, 0, 0, 1)">　　　　　　<img src="https://images2015.cnblogs.com/blog/844352/201609/844352-20160907225201738-1540923123.png" alt=""></span></span></span></p>
+<p>　　　　　 &nbsp;<span style="font-size: 14px">如上图所示，执行上述命令后，需要输入信息。<strong><span style="color: rgba(255, 0, 0, 1)">输入的信息中最重要的为 Common Name，这里输入的域名即为我们要使用https访问的域名。</span></strong></span></p>
+<p><span style="font-size: 14px"><span style="color: rgba(255, 0, 0, 1)">　　　　　 &nbsp;<span style="color: rgba(0, 0, 0, 1)">以上步骤完成后，ssl文件夹内出现两个文件：<img src="https://images2015.cnblogs.com/blog/844352/201609/844352-20160907225449613-1993871809.png" alt=""></span></span></span></p>
+<p>　　<span style="font-size: 16px">（4）去除密码。</span></p>
+<p><span style="font-size: 16px">　　　　 <span style="font-size: 14px">在加载SSL支持的Nginx并使用上述私钥时除去必须的口令，否则会在启动nginx的时候需要输入密码。</span><br></span></p>
+<p><span style="font-size: 16px"><span style="font-size: 14px">　　　　　复制lee.key并重命名为lee.key.org&nbsp;</span></span></p>
+<p><span style="font-size: 16px"><span style="font-size: 14px">　　　　　可以使用此命令行，也可以使用鼠标操作 &nbsp; &nbsp;&nbsp;<strong><span style="color: rgba(255, 0, 255, 1)">copy lee.key lee.key.org</span></strong></span></span></p>
+<p><span style="font-size: 16px"><span style="font-size: 14px">　　　　　去除口令，在命令行中执行此命令：&nbsp;&nbsp;<strong><span style="color: rgba(255, 0, 255, 1)">openssl rsa -in lee.key.org -out lee.key &nbsp;</span></strong><span style="color: rgba(255, 0, 255, 1)"><span style="color: rgba(0, 0, 0, 1)">（lee为自定义文件名）</span></span></span></span></p>
+<p>　　　　　<span style="font-size: 14px">如下图所示，此命令需要输入刚才设置的密码。</span></p>
+<p>　　　　　　<img src="https://images2015.cnblogs.com/blog/844352/201609/844352-20160907225931629-1434233040.png" alt=""></p>
+<p>　　　<span style="font-size: 16px">（5）生成crt证书</span></p>
+<p>　　　　　<span style="font-size: 14px">在命令行中执行此命令：&nbsp;<strong><span style="color: rgba(255, 0, 255, 1)">openssl x509 -req -days 365 -in lee.csr -signkey lee.key -out lee.crt &nbsp;</span></strong><span style="color: rgba(255, 0, 255, 1)"><span style="color: rgba(0, 0, 0, 1)">（lee为自定义文件名）</span></span></span></p>
+<p>　　　　　　<img src="https://images2015.cnblogs.com/blog/844352/201609/844352-20160907230105504-1874769271.png" alt=""></p>
+<p>　　　　 &nbsp;<span style="font-size: 14px">证书生成完毕，ssl文件夹中一共生成如下4个文件，我们需要使用到的是lee.crt和lee.key。</span></p>
+<p>　　　　　　<img src="https://images2015.cnblogs.com/blog/844352/201609/844352-20160907230134707-1345377777.png" alt=""></p>
+<p><span style="font-size: 16px">5.&nbsp;修改nginx.conf文件</span></p>
+<p><span style="font-size: 16px">　　　　<span style="font-size: 14px">nginx.conf文件位于：C:\wnmp\nginx\conf</span></span></p>
+<p><span style="font-size: 14px">　　　　找到该文件中如下代码的位置进行修改：</span></p>
+<div class="cnblogs_code" style="width: 70%; margin-left: 60px">
+<pre><span style="color: rgba(0, 0, 0, 1)"># HTTPS server
+    #
+    #server {
+    #    listen       </span>443 ssl<span style="color: rgba(0, 128, 0, 1)">;
+</span>    #    server_name  localhost<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">
+    #    ssl_certificate      cert.pem</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>    #    ssl_certificate_key  cert.key<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">
+    #    ssl_session_cache    shared:SSL:1m</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>    #    ssl_session_timeout  5m<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">
+    #    ssl_ciphers  HIGH:!aNULL:!MD5</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>    #    ssl_prefer_server_ciphers  on<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">
+    #    location / {
+    #        root   html</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>    #        index  index.html index.htm<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">    #    }
+    #}</span></pre>
+</div>
+<p>　　　　<span style="font-size: 14px">　修改为：</span></p>
+<div class="cnblogs_code" style="width: 70%; margin-left: 60px">
+<pre><span style="color: rgba(0, 0, 0, 1)"># HTTPS server
+    #
+#modify by lee </span>20160907<span style="color: rgba(0, 0, 0, 1)"> for https -s 
+    server {
+        listen       </span>443 ssl<span style="color: rgba(0, 128, 0, 1)">;
+</span>        server_name    www.lee.com<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">    
+        ssl_certificate      C:/wnmp/nginx/ssl/lee.crt</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>        ssl_certificate_key  C:/wnmp/nginx/ssl/lee.key<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">    
+        ssl_session_cache    shared:SSL:1m</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>        ssl_session_timeout  5m<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">    
+        ssl_ciphers  HIGH:!aNULL:!MD5</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>        ssl_prefer_server_ciphers  on<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">    
+        location / {
+            root   C:/wnmp/lee</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>            index  index.html index.htm index.php<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">        }
+
+               root           C:/wnmp/lee</span><span style="color: rgba(0, 128, 0, 1)">;
+</span>               fastcgi_pass   127.0.0.1:9001<span style="color: rgba(0, 128, 0, 1)">;
+</span>               fastcgi_index  index.php<span style="color: rgba(0, 128, 0, 1)">;
+</span>               fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name<span style="color: rgba(0, 128, 0, 1)">;
+</span>               include        fastcgi_params<span style="color: rgba(0, 128, 0, 1)">;
+</span><span style="color: rgba(0, 0, 0, 1)">        }
+    }
+#modify by lee </span>20160907 for https -s </pre>
+</div>
+<p>　　　　<span style="font-size: 14px">　重启nginx。</span></p>
+<p><span style="font-size: 14px">　　　　　在浏览器中，访问 https://www.lee.com。发现出现证书认证，并能够成功访问。<span style="color: rgba(255, 0, 0, 1)">（www.lee.com为生成证书时，Common Name输入的域名）</span></span></p>
+<p><span style="font-size: 14px"><span style="color: rgba(255, 0, 0, 1)">　　　　　<span style="color: rgba(0, 0, 0, 1)">（执行此步骤时，需要配置好Virtual Host，并且在www.lee.com开放目录中添加了index.php默认入口访问文件。）</span></span></span></p>
+<p>　　　　　　<img src="https://images2015.cnblogs.com/blog/844352/201609/844352-20160907232253410-1811674172.png" alt=""></p>
+<p>&nbsp;　　　　<span style="font-size: 14px">上面的https被红色划线是因为我们使用的是自己生成的证书，此证书不受浏览器信任，如果想使其变为绿色，则需要向证书管理机构进行申请。</span></p>
+<p><span style="font-size: 16px">6. 添加重定向，自动跳转使用https。</span></p>
+<p>　　　　　<span style="font-size: 14px">在nginx.conf中virtual host中如下代码位置添加一行代码：</span></p>
+<div class="cnblogs_code" style="width: 70%; margin-left: 60px">
+<pre>    listen       80<span style="color: rgba(0, 128, 0, 1)">;</span>                    
+    server_name   www.lee.com<span style="color: rgba(0, 128, 0, 1)">;</span>                    
+#modify by lee 20160907<span style="color: rgba(0, 0, 0, 1)"> for https Redirect -s                        
+    rewrite ^(.*) https://$server_name$</span>1 permanent<span style="color: rgba(0, 128, 0, 1)">;</span>                    
+#modify by lee 20160907 for https Redirect -e                        </pre>
+</div>
+<p>　　　　　<span style="font-size: 14px">重启nginx。</span></p>
+<p><span style="font-size: 14px">　　　　　访问www.lee.com，会发现浏览器自动跳转到https://www.lee.com，并能够成功访问。</span></p>
+<p><span style="font-size: 14px">　　</span><span style="font-size: 16px">至此，https访问配置成功完成。</span></p>
+<p><span style="font-size: 16px; line-height: 1.5">　　如有不明之处，欢迎留言，如有错误敬请指正。</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; line-height: 1.5">　　<span style="font-size: 12px">参考：&nbsp;http://blog.csdn.net/ztclx2010/article/details/6896336</span></span></p>
+<p><span style="font-size: 16px"><span style="color: rgba(255, 0, 255, 1)"><span style="color: rgba(0, 0, 0, 1)">　</span></span></span></p>
+<p>&nbsp;</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+        <p class="postfoot">
+            posted on 
+<span id="post-date">2016-09-08 08:37</span>&nbsp;
+<a href="https://www.cnblogs.com/vincent-li666/">Vincent.李</a>&nbsp;
+阅读(<span id="post_view_count">40724</span>)&nbsp;
+评论(<span id="post_comment_count">3</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=5851463" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(5851463);return false;">收藏</a>
+        </p>
+    </div>
+</div>
+
+
+<script__ src="https://common.cnblogs.com/highlight/10.3.1/highlight.min.js"></script__>
+<script__>markdown_highlight();</script__>
+<script__>
+    var allowComments = true, cb_blogId = 293899, cb_blogApp = 'vincent-li666', cb_blogUserGuid = 'a435a85a-1393-e511-9fc1-ac853d9f53cc';
+    var cb_entryId = 5851463, cb_entryCreatedDate = '2016-09-08 08:37', cb_postType = 1;
+    updatePostStats(
+        [cb_entryId],
+        function(id, count) { $("#post_view_count").text(count) },
+        function(id, count) { $("#post_comment_count").text(count) })
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");
+</script__>
+<a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="under-post-card">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_card1"></div>
+    <div id="cnblogs_c2" class="under-post-card">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_card2"></div>
+    <div id="HistoryToday" class="under-post-card"></div>
+    <script__ type="text/javascript">
+       var commentManager = new blogCommentManager();
+       commentManager.renderComments(0);
+       fixPostBody();
+       deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);       deliverT2();
+       deliverC1C2();
+       loadNewsAndKb();
+       loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);       LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+       GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+       loadOptUnderPost();
+       GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script__>
+</div>
+
+
+
+	<p id="footer">
+	Powered by: 
+	<br />
+	
+	<a href="https://www.cnblogs.com/" id="footer_site_link">博客园</a>
+	<br />
+	Copyright &copy; 2021 Vincent.李
+<br /><span id="poweredby">Powered by .NET 5.0 on Kubernetes</span>
+
+</p>
+
+
+</div>
+<div id="rightmenu">
+	
+		<div id="blog-calendar" style="display:none"></div><script__>loadBlogDefaultCalendar();</script__>
+		
+<h3>导航</h3>
+<ul>
+			<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+			<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/vincent-li666/">
+首页</a>
+</li>
+			<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+			<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/Vincent.%E6%9D%8E">
+联系</a></li>
+			<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/vincent-li666/rss/">
+订阅</a>
+<a id="blog_nav_rss_image" href="https://www.cnblogs.com/vincent-li666/rss/">
+    <img src="/skins/book/images/xml.gif" alt="订阅" />
+</a></li>
+			<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div id="blog_stats_place_holder"><script__>loadBlogStats();</script__></div>
+		<div id="sidebar_news" class="newsItem">
+            <script__>loadBlogNews();</script__>
+</div>
+<div id="sidebar_c3"></div>
+		<div id="blog-sidecolumn"></div>
+                    <script__>loadBlogSideColumn();</script__>
+	
+</div>
+			
+			
+			
+			
+			 
+
+	
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8L-rpLgFVEJMgssCVvNUAjtqafFG4FjJrc4SYi53NUQdKB37erUcV5-4T4u9IgWtKDe-AlaKleDRst5WFwM2VJDBmLv8Kf1BuRF8yA2pBIZnLc22xsmto1v0K128BkeiJT6Bl4LxFXLhv1b_XBPm9Y4" />
+</body>
+</html>
