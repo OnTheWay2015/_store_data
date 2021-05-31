@@ -1,0 +1,4 @@
+db.GS_VEDIO.find({"Vedio":{"$in":[""]}})
+   .projection({})
+   .sort({_id:-1})
+   .limit(100)

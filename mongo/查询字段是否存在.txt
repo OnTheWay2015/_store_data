@@ -1,0 +1,1 @@
+db.test.find({"test":{$exists:true}});

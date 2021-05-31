@@ -1,0 +1,443 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin-when-crossorigin" />
+    <meta name="description" content="在c/c&#x2B;&#x2B;实际问题的编程中，我们经常会用到日期与时间的格式，在算法运行中，通常将时间转化为int来进行计算，而处理输入输出的时候，日期时间的格式却是五花八门，以各种标点空格相连或者不加标点。 首先，" />
+    <meta property="og:description" content="在c/c&#x2B;&#x2B;实际问题的编程中，我们经常会用到日期与时间的格式，在算法运行中，通常将时间转化为int来进行计算，而处理输入输出的时候，日期时间的格式却是五花八门，以各种标点空格相连或者不加标点。 首先，" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>c/c++日期时间处理与字符串string转换 - 任家硕 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="https://common.cnblogs.com/css/blog-common.min.css?v=zS6-e1bxywlu3kpHvpr1J6MySwya3ztFtEnS7RYQ0Fk" />
+    <link id="MainCss" rel="stylesheet" href="https://common.cnblogs.com/skins/coffee/bundle-coffee.min.css?v=BgguPR_JbmA1HKLJOLqLtHq5pt8a1UlO6ibCA_xgwdI" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="https://common.cnblogs.com/skins/coffee/bundle-coffee-mobile.min.css?v=gcYNuAuJkNMICFERxhZCtKHGitYmBYNTxm9W97H2O2g" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/renjiashuo/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/renjiashuo/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/renjiashuo/wlwmanifest.xml" />
+    <script__>
+        var currentBlogId = 352997;
+        var currentBlogApp = 'renjiashuo';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'coffee';
+        var visitorUserId = '';
+    </script__>
+        <script__>
+            var currentPostDateAdded = '2017-05-27 11:31';
+        </script__>
+    <script__ src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script__>
+    <script__ src="/js/blog-common.min.js?v=2Mic1VLeHXarpdzASbXqFMIMVLEBiWXNO5yiTHUcmhw"></script__>
+    
+    
+    
+</head>
+<body class="has-navbar">
+    <a name="top"></a>
+        <div id="bannerbar" class="bannerbar-mobile formobile">
+            <a href="https://developer.aliyun.com/learning/trainingcamp/realtime/1?utm_content=g_1000268661" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'aliyun-realtime-blog-bannerbar-mobile')">
+                <img src="https://img2020.cnblogs.com/blog/35695/202105/35695-20210509221214222-438425324.png" alt="" />
+            </a>
+        </div>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding"><a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a></li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔">
+                        <img id="new_post_icon" class="navbar-icon" src="/images/aggsite/newpost.svg" alt="写随笔" />
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=J0WS2P2iPgaIVgXxcAhliw4AFZIpaTWxtdoNAv9eiCA" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <img id="navbar_lite_mode_on" src="/images/lite-mode-check.svg" class="hide" /><span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a href="https://www.cnblogs.com/renjiashuo/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/renjiashuo/">任家硕</a>
+</h1>
+<h2>https://github.com/renjiashuo</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="navigator">
+			
+<ul id="navList">
+	<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+	<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/renjiashuo/">
+首页</a>
+</li>
+	<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+	<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E4%BB%BB%E5%AE%B6%E7%A1%95">
+联系</a></li>
+	<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+	<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/renjiashuo/rss/">
+订阅</a>
+	
+<a id="blog_nav_rss_image" href="https://www.cnblogs.com/renjiashuo/rss/">
+    <img src="/skins/coffee/images/xml.gif" alt="订阅" />
+</a></li>
+</ul>
+
+
+
+			<div class="blogStats">
+				
+				<div id="blog_stats_place_holder"><script__>loadBlogStats();</script__></div>
+				
+			</div><!--end: blogStats -->
+		</div><!--end: navigator 博客导航栏 -->
+		<div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class = "postTitle">
+			
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/renjiashuo/p/6913668.html">
+    <span>c/c++日期时间处理与字符串string转换</span>
+    
+
+
+
+</a>
+
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body blogpost-body-html">
+<p>在c/c++实际问题的编程中，我们经常会用到日期与时间的格式，在算法运行中，通常将时间转化为int来进行计算，而处理输入输出的时候，日期时间的格式却是五花八门，以各种标点空格相连或者不加标点。</p>
+<p>首先，在c中，是有一个标准的日期时间结构体的，在标准库wchar.h内，我们可以看到结构体tm的声明如下：</p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> <span style="color: rgba(0, 0, 0, 1)">#ifndef _TM_DEFINED
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 255, 1)">struct</span><span style="color: rgba(0, 0, 0, 1)"> tm {
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_sec;     <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> seconds after the minute - [0,59] </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 4</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_min;     <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> minutes after the hour - [0,59] </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 5</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_hour;    <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> hours since midnight - [0,23] </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 6</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_mday;    <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> day of the month - [1,31] </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 7</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_mon;     <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> months since January - [0,11] </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 8</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_year;    <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> years since 1900 </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_wday;    <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> days since Sunday - [0,6] </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">10</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_yday;    <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> days since January 1 - [0,365] </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">11</span>         <span style="color: rgba(0, 0, 255, 1)">int</span> tm_isdst;   <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)"> daylight savings time flag </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">12</span> <span style="color: rgba(0, 0, 0, 1)">        };
+</span><span style="color: rgba(0, 128, 128, 1)">13</span> <span style="color: rgba(0, 0, 255, 1)">#define</span> _TM_DEFINED
+<span style="color: rgba(0, 128, 128, 1)">14</span> <span style="color: rgba(0, 0, 255, 1)">#endif</span>  /* _TM_DEFINED */</pre>
+</div>
+<p>由于各项英文注释很好理解，这里只做简要补充。</p>
+<p>1）注意月份是0-11，而不是1-12，所以在tm结构体与string转换的时候，要相应的做减1加1处理。</p>
+<p>2）tm_isdst为夏令时设置，0为非夏令时，1为夏令时。由于21世纪的中国并没有实行夏令时制度，所以编写国内程序我们可以忽略这个变量。</p>
+<p>利用这个结构体，我们就可以完成日期时间与string字符串的转换了，由于计算的方便，我们一般选择将日期时间的string转换成time_t类型。</p>
+<p>如果你非要int的话，我可以负责任的告诉你，time_t在visual studio环境下，就是"__int64"类型的变量，它由typedef关键字在库文件crtdefs.h里给定，所以，把time_t放心的拿去用就好了。</p>
+<p>言归正传，这里，我们假定输入的字符串格式为"2017-05-27 19:50:02"，这个设定并不影响其他格式的字符串时间与可参与计算的变量的转换，如果要参与转换的日期字符串不是这个格式，读者可自行更改下面给出代码的对应部分。</p>
+<p>下面给出日期时间string转换为time_t的函数代码。</p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> time_t StringToDatetime(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> str)
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>     <span style="color: rgba(0, 0, 255, 1)">char</span> *cha = (<span style="color: rgba(0, 0, 255, 1)">char</span>*)str.data();             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将string转换成char*。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 4</span>     tm tm_;                                    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义tm结构体。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 5</span>     <span style="color: rgba(0, 0, 255, 1)">int</span> year, month, day, hour, minute, second;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义时间的各个int临时变量。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 6</span>     sscanf(cha, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d-%d-%d %d:%d:%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, &amp;year, &amp;month, &amp;day, &amp;hour, &amp;minute, &amp;second);<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将string存储的日期时间，转换为int临时变量。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 7</span>     tm_.tm_year = year - <span style="color: rgba(128, 0, 128, 1)">1900</span>;                 <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 年，由于tm结构体存储的是从1900年开始的时间，所以tm_year为int临时变量减去1900。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 8</span>     tm_.tm_mon = month - <span style="color: rgba(128, 0, 128, 1)">1</span>;                    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 月，由于tm结构体的月份存储范围为0-11，所以tm_mon为int临时变量减去1。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>     tm_.tm_mday = day;                         <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 日。</span>
+<span style="color: rgba(0, 128, 128, 1)">10</span>     tm_.tm_hour = hour;                        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 时。</span>
+<span style="color: rgba(0, 128, 128, 1)">11</span>     tm_.tm_min = minute;                       <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 分。</span>
+<span style="color: rgba(0, 128, 128, 1)">12</span>     tm_.tm_sec = second;                       <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 秒。</span>
+<span style="color: rgba(0, 128, 128, 1)">13</span>     tm_.tm_isdst = <span style="color: rgba(128, 0, 128, 1)">0</span>;                          <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 非夏令时。</span>
+<span style="color: rgba(0, 128, 128, 1)">14</span>     time_t t_ = mktime(&amp;tm_);                  <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将tm结构体转换成time_t格式。</span>
+<span style="color: rgba(0, 128, 128, 1)">15</span>     <span style="color: rgba(0, 0, 255, 1)">return</span> t_;                                 <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 返回值。 </span>
+<span style="color: rgba(0, 128, 128, 1)">16</span> }</pre>
+</div>
+<p>其中，第6行为给定的日期string设置语句，由于这里假定是输入的string是"2017-05-27 19:50:02"，所以将参数设置为"%d-%d-%d %d:%d:%d"，如果输入的是其他格式的日期时间形式，将这个参数改为对应的格式即可。另外，如果在一个程序中，设计到多种不同的日期时间格式，可以将这个参数作为这个函数的参数之一来给定。</p>
+<p>第14行的mktime函数位于c头文件time.h中，用来将输入参数所指的tm结构数据转换成从公元1970年1月1日0时0分0秒算起至今的本地时间所经过的秒数。</p>
+<p>由于返回的time_t通常很大，不利于算法计算的效率，所以我们可以将所有的时间转换完毕后，将所有的time_t全部减去一个数，这个数可以是这个time_t中最小的那个数，也可以是其他方便算法计算的数。在算法执行完毕之后，我们再将结果的时间全部加上这个数，以便将时间转换回来。</p>
+<p>现在假定我们已经将算法运行完毕，那么我们需要将结果的time_t转换为之前给定的string格式以便于结果的展示。</p>
+<p>下面给出日期时间time_t转换为string的函数代码。</p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> DatetimeToString(time_t time)
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>     tm *tm_ = localtime(&amp;time);                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将time_t格式转换为tm结构体</span>
+<span style="color: rgba(0, 128, 128, 1)"> 4</span>     <span style="color: rgba(0, 0, 255, 1)">int</span> year, month, day, hour, minute, second;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义时间的各个int临时变量。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 5</span>     year = tm_-&gt;tm_year + <span style="color: rgba(128, 0, 128, 1)">1900</span>;                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，年，由于tm结构体存储的是从1900年开始的时间，所以临时变量int为tm_year加上1900。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 6</span>     month = tm_-&gt;tm_mon + <span style="color: rgba(128, 0, 128, 1)">1</span>;                   <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，月，由于tm结构体的月份存储范围为0-11，所以临时变量int为tm_mon加上1。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 7</span>     day = tm_-&gt;tm_mday;                        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，日。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 8</span>     hour = tm_-&gt;tm_hour;                       <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，时。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>     minute = tm_-&gt;tm_min;                      <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，分。</span>
+<span style="color: rgba(0, 128, 128, 1)">10</span>     second = tm_-&gt;tm_sec;                      <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，秒。</span>
+<span style="color: rgba(0, 128, 128, 1)">11</span>     <span style="color: rgba(0, 0, 255, 1)">char</span> yearStr[<span style="color: rgba(128, 0, 128, 1)">5</span>], monthStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], dayStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], hourStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], minuteStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], secondStr[<span style="color: rgba(128, 0, 128, 1)">3</span>];<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义时间的各个char*变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">12</span>     sprintf(yearStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, year);              <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 年。</span>
+<span style="color: rgba(0, 128, 128, 1)">13</span>     sprintf(monthStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, month);            <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 月。</span>
+<span style="color: rgba(0, 128, 128, 1)">14</span>     sprintf(dayStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, day);                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 日。</span>
+<span style="color: rgba(0, 128, 128, 1)">15</span>     sprintf(hourStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, hour);              <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 时。</span>
+<span style="color: rgba(0, 128, 128, 1)">16</span>     sprintf(minuteStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, minute);          <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 分。</span>
+<span style="color: rgba(0, 128, 128, 1)">17</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (minuteStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] == <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span>)                  <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果分为一位，如5，则需要转换字符串为两位，如05。</span>
+<span style="color: rgba(0, 128, 128, 1)">18</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">19</span>         minuteStr[<span style="color: rgba(128, 0, 128, 1)">2</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">20</span>         minuteStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] = minuteStr[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">];
+</span><span style="color: rgba(0, 128, 128, 1)">21</span>         minuteStr[<span style="color: rgba(128, 0, 128, 1)">0</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">22</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">23</span>     sprintf(secondStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, second);          <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 秒。</span>
+<span style="color: rgba(0, 128, 128, 1)">24</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (secondStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] == <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span>)                  <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果秒为一位，如5，则需要转换字符串为两位，如05。</span>
+<span style="color: rgba(0, 128, 128, 1)">25</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">26</span>         secondStr[<span style="color: rgba(128, 0, 128, 1)">2</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">27</span>         secondStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] = secondStr[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">];
+</span><span style="color: rgba(0, 128, 128, 1)">28</span>         secondStr[<span style="color: rgba(128, 0, 128, 1)">0</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">29</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">30</span>     <span style="color: rgba(0, 0, 255, 1)">char</span> s[<span style="color: rgba(128, 0, 128, 1)">20</span>];                                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义总日期时间char*变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">31</span>     sprintf(s, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%s-%s-%s %s:%s:%s</span><span style="color: rgba(128, 0, 0, 1)">"</span>, yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr);<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将年月日时分秒合并。</span>
+<span style="color: rgba(0, 128, 128, 1)">32</span>     <span style="color: rgba(0, 0, 255, 1)">string</span> str(s);                             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义string变量，并将总日期时间char*变量作为构造函数的参数传入。</span>
+<span style="color: rgba(0, 128, 128, 1)">33</span>     <span style="color: rgba(0, 0, 255, 1)">return</span> str;                                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 返回转换日期时间后的string变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">34</span> }</pre>
+</div>
+<p>其中，第3行的localtime函数位于c头文件time.h中，用来将从公元1970年1月1日0时0分0秒算起至今的本地时间所经过的秒数转换成标准tm结构体。</p>
+<p>第31行是输出日期时间字符串string格式的给定，如果需要其他格式，可以修改"%s-%s-%s %s:%s:%s"为指定格式，如果在同一个程序里需要多种格式的输出，可以将这个参数作为本函数的参数来输入。</p>
+<p>下面给出完整调试用程序及所需头文件，代码测试通过环境windows10 + vs2013；Ubuntu 14.04 +&nbsp;gcc version 4.8.2。</p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> #include &lt;iostream&gt;
+<span style="color: rgba(0, 128, 128, 1)"> 2</span> #include &lt;ctime&gt;
+<span style="color: rgba(0, 128, 128, 1)"> 3</span> #include &lt;<span style="color: rgba(0, 0, 255, 1)">string</span>&gt;
+<span style="color: rgba(0, 128, 128, 1)"> 4</span> <span style="color: rgba(0, 0, 255, 1)">using</span> <span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> std;
+</span><span style="color: rgba(0, 128, 128, 1)"> 5</span> time_t StringToDatetime(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> str)
+</span><span style="color: rgba(0, 128, 128, 1)"> 6</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 7</span>     <span style="color: rgba(0, 0, 255, 1)">char</span> *cha = (<span style="color: rgba(0, 0, 255, 1)">char</span>*)str.data();             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将string转换成char*。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 8</span>     tm tm_;                                    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义tm结构体。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>     <span style="color: rgba(0, 0, 255, 1)">int</span> year, month, day, hour, minute, second;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义时间的各个int临时变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">10</span>     sscanf(cha, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d-%d-%d %d:%d:%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, &amp;year, &amp;month, &amp;day, &amp;hour, &amp;minute, &amp;second);<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将string存储的日期时间，转换为int临时变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">11</span>     tm_.tm_year = year - <span style="color: rgba(128, 0, 128, 1)">1900</span>;                 <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 年，由于tm结构体存储的是从1900年开始的时间，所以tm_year为int临时变量减去1900。</span>
+<span style="color: rgba(0, 128, 128, 1)">12</span>     tm_.tm_mon = month - <span style="color: rgba(128, 0, 128, 1)">1</span>;                    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 月，由于tm结构体的月份存储范围为0-11，所以tm_mon为int临时变量减去1。</span>
+<span style="color: rgba(0, 128, 128, 1)">13</span>     tm_.tm_mday = day;                         <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 日。</span>
+<span style="color: rgba(0, 128, 128, 1)">14</span>     tm_.tm_hour = hour;                        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 时。</span>
+<span style="color: rgba(0, 128, 128, 1)">15</span>     tm_.tm_min = minute;                       <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 分。</span>
+<span style="color: rgba(0, 128, 128, 1)">16</span>     tm_.tm_sec = second;                       <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 秒。</span>
+<span style="color: rgba(0, 128, 128, 1)">17</span>     tm_.tm_isdst = <span style="color: rgba(128, 0, 128, 1)">0</span>;                          <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 非夏令时。</span>
+<span style="color: rgba(0, 128, 128, 1)">18</span>     time_t t_ = mktime(&amp;tm_);                  <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将tm结构体转换成time_t格式。</span>
+<span style="color: rgba(0, 128, 128, 1)">19</span>     <span style="color: rgba(0, 0, 255, 1)">return</span> t_;                                 <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 返回值。 </span>
+<span style="color: rgba(0, 128, 128, 1)">20</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">21</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> DatetimeToString(time_t time)
+</span><span style="color: rgba(0, 128, 128, 1)">22</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">23</span>     tm *tm_ = localtime(&amp;time);                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将time_t格式转换为tm结构体</span>
+<span style="color: rgba(0, 128, 128, 1)">24</span>     <span style="color: rgba(0, 0, 255, 1)">int</span> year, month, day, hour, minute, second;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义时间的各个int临时变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">25</span>     year = tm_-&gt;tm_year + <span style="color: rgba(128, 0, 128, 1)">1900</span>;                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，年，由于tm结构体存储的是从1900年开始的时间，所以临时变量int为tm_year加上1900。</span>
+<span style="color: rgba(0, 128, 128, 1)">26</span>     month = tm_-&gt;tm_mon + <span style="color: rgba(128, 0, 128, 1)">1</span>;                   <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，月，由于tm结构体的月份存储范围为0-11，所以临时变量int为tm_mon加上1。</span>
+<span style="color: rgba(0, 128, 128, 1)">27</span>     day = tm_-&gt;tm_mday;                        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，日。</span>
+<span style="color: rgba(0, 128, 128, 1)">28</span>     hour = tm_-&gt;tm_hour;                       <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，时。</span>
+<span style="color: rgba(0, 128, 128, 1)">29</span>     minute = tm_-&gt;tm_min;                      <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，分。</span>
+<span style="color: rgba(0, 128, 128, 1)">30</span>     second = tm_-&gt;tm_sec;                      <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 临时变量，秒。</span>
+<span style="color: rgba(0, 128, 128, 1)">31</span>     <span style="color: rgba(0, 0, 255, 1)">char</span> yearStr[<span style="color: rgba(128, 0, 128, 1)">5</span>], monthStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], dayStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], hourStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], minuteStr[<span style="color: rgba(128, 0, 128, 1)">3</span>], secondStr[<span style="color: rgba(128, 0, 128, 1)">3</span>];<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义时间的各个char*变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">32</span>     sprintf(yearStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, year);              <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 年。</span>
+<span style="color: rgba(0, 128, 128, 1)">33</span>     sprintf(monthStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, month);            <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 月。</span>
+<span style="color: rgba(0, 128, 128, 1)">34</span>     sprintf(dayStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, day);                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 日。</span>
+<span style="color: rgba(0, 128, 128, 1)">35</span>     sprintf(hourStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, hour);              <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 时。</span>
+<span style="color: rgba(0, 128, 128, 1)">36</span>     sprintf(minuteStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, minute);          <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 分。</span>
+<span style="color: rgba(0, 128, 128, 1)">37</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (minuteStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] == <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span>)                  <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果分为一位，如5，则需要转换字符串为两位，如05。</span>
+<span style="color: rgba(0, 128, 128, 1)">38</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">39</span>         minuteStr[<span style="color: rgba(128, 0, 128, 1)">2</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">40</span>         minuteStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] = minuteStr[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">];
+</span><span style="color: rgba(0, 128, 128, 1)">41</span>         minuteStr[<span style="color: rgba(128, 0, 128, 1)">0</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">42</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">43</span>     sprintf(secondStr, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, second);          <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 秒。</span>
+<span style="color: rgba(0, 128, 128, 1)">44</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (secondStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] == <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span>)                  <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果秒为一位，如5，则需要转换字符串为两位，如05。</span>
+<span style="color: rgba(0, 128, 128, 1)">45</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">46</span>         secondStr[<span style="color: rgba(128, 0, 128, 1)">2</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">\0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">47</span>         secondStr[<span style="color: rgba(128, 0, 128, 1)">1</span>] = secondStr[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">];
+</span><span style="color: rgba(0, 128, 128, 1)">48</span>         secondStr[<span style="color: rgba(128, 0, 128, 1)">0</span>] = <span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">0</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">49</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">50</span>     <span style="color: rgba(0, 0, 255, 1)">char</span> s[<span style="color: rgba(128, 0, 128, 1)">20</span>];                                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义总日期时间char*变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">51</span>     sprintf(s, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%s-%s-%s %s:%s:%s</span><span style="color: rgba(128, 0, 0, 1)">"</span>, yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr);<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将年月日时分秒合并。</span>
+<span style="color: rgba(0, 128, 128, 1)">52</span>     <span style="color: rgba(0, 0, 255, 1)">string</span> str(s);                             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义string变量，并将总日期时间char*变量作为构造函数的参数传入。</span>
+<span style="color: rgba(0, 128, 128, 1)">53</span>     <span style="color: rgba(0, 0, 255, 1)">return</span> str;                                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 返回转换日期时间后的string变量。</span>
+<span style="color: rgba(0, 128, 128, 1)">54</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">55</span> <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> main()
+</span><span style="color: rgba(0, 128, 128, 1)">56</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">57</span>     <span style="color: rgba(0, 0, 255, 1)">string</span> timeStr = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">2017-05-27 19:50:02</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">58</span>     cout &lt;&lt; timeStr &lt;&lt;<span style="color: rgba(0, 0, 0, 1)"> endl;
+</span><span style="color: rgba(0, 128, 128, 1)">59</span>     time_t timet =<span style="color: rgba(0, 0, 0, 1)"> StringToDatetime(timeStr);
+</span><span style="color: rgba(0, 128, 128, 1)">60</span>     timet += <span style="color: rgba(128, 0, 128, 1)">5</span> * <span style="color: rgba(128, 0, 128, 1)">24</span> * <span style="color: rgba(128, 0, 128, 1)">3600</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">61</span>     <span style="color: rgba(0, 0, 255, 1)">string</span> timeStr2 =<span style="color: rgba(0, 0, 0, 1)"> DatetimeToString(timet);
+</span><span style="color: rgba(0, 128, 128, 1)">62</span>     cout &lt;&lt; timeStr2 &lt;&lt;<span style="color: rgba(0, 0, 0, 1)"> endl;
+</span><span style="color: rgba(0, 128, 128, 1)">63</span>     <span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">64</span> }</pre>
+</div>
+<p>主函数中给定一个字符串"2017-05-27 19:50:02"。</p>
+<p>经过增加5*24*3600秒之后，得到的字符串是"2017-6-1 19:50:02"。</p>
+<p>端午节过了就到儿童节啦，完结撒花!*★,°*:。☆\(~▽~)/$:*。°★*。。</p>
+<p>&nbsp;</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+		</div>
+		<div class="postDesc">posted @ 
+<span id="post-date">2017-05-27 23:31</span>&nbsp;
+<a href="https://www.cnblogs.com/renjiashuo/">任家硕</a>&nbsp;
+阅读(<span id="post_view_count">40507</span>)&nbsp;
+评论(<span id="post_comment_count">2</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=6913668" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(6913668);return false;">收藏</a></div>
+	</div>
+	
+	
+</div><!--end: topics 文章、评论容器-->
+<script__ src="https://common.cnblogs.com/highlight/10.3.1/highlight.min.js"></script__>
+<script__>markdown_highlight();</script__>
+<script__>
+    var allowComments = true, cb_blogId = 352997, cb_blogApp = 'renjiashuo', cb_blogUserGuid = 'e221d1b3-0630-e711-9fc1-ac853d9f53cc';
+    var cb_entryId = 6913668, cb_entryCreatedDate = '2017-05-27 23:31', cb_postType = 1;
+    updatePostStats(
+        [cb_entryId],
+        function(id, count) { $("#post_view_count").text(count) },
+        function(id, count) { $("#post_comment_count").text(count) })
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");
+</script__>
+<a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="under-post-card">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_card1"></div>
+    <div id="cnblogs_c2" class="under-post-card">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_card2"></div>
+    <div id="HistoryToday" class="under-post-card"></div>
+    <script__ type="text/javascript">
+       var commentManager = new blogCommentManager();
+       commentManager.renderComments(0);
+       fixPostBody();
+       deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);       deliverT2();
+       deliverC1C2();
+       loadNewsAndKb();
+       loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);       LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+       GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+       loadOptUnderPost();
+       GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script__>
+</div>
+
+</div>
+
+
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			<div id="sidebar_news" class="newsItem">
+            <script__>loadBlogNews();</script__>
+</div>
+<div id="sidebar_c3"></div>
+			<div id="calendar"><div id="blog-calendar" style="display:none"></div><script__>loadBlogDefaultCalendar();</script__></div>
+			
+			<DIV id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script__>loadBlogSideColumn();</script__>
+			</DIV>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2021 任家硕
+<br /><span id="poweredby">Powered by .NET 5.0 on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8L-rpLgFVEJMgssCVvNUAju5CDgI4bYqj2y9R3iPUcfugJXhFuELDplYqk1I47hZdDah7HA-rxw6M0uN1IQSZoxfPBkA-mx6Qhwo881K00FRvVWqnapXv_dlmDaQn7xgiNtibjelq1LQ9VFfjK3KgL8" />
+</body>
+</html>

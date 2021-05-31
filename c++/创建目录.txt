@@ -1,0 +1,23 @@
+#include <boost/filesystem.hpp>
+
+
+int32_t createDirectorys(const std::string &directoryPath)
+{
+    uint32_t dirPathLen = directoryPath.length();
+    for (uint32_t i = 0; i < dirPathLen; ++i)
+    {
+        if ( directoryPath[i] == '/' || i==dirPathLen-1)
+        {
+			std::string dir = directoryPath.substr(0,i);
+            if (!boost::filesystem::is_directory(dir))
+            {
+				if (!boost::filesystem::create_directory(dir))
+				{
+					std::cout << "create_directories failed: " << dir<< ", fdir["<<directoryPath<<"]" << std::endl;
+					return 1;
+				}
+            }
+        }
+    }
+    return 0;
+}

@@ -1,0 +1,10 @@
+fatal error C1854: 无法覆盖在创建对象文件“E:\____work_space_\server_work\sports_information\x64\Debug\sports_information\timer_manager.obj”的预编译头过程中形成的信息
+
+
+在Visual Stdio中使用预编译头，可能会产生error C1854。
+解决方法如下：
+1、将stdafx.cpp属性中预编译头改为创建。 (找到该文件单独设置属性)
+2、将工程中其余cpp属性预编译头均改为使用。
+3、将工程属性预编译头改为使用。
+4、如果还存在该error，重新生成解决方案。
+
