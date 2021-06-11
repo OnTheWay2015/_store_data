@@ -1,0 +1,15 @@
+//https://www.zhihu.com/question/265720343/answer/1089523645
+
+用脚本转成 csv文件，再用excel打开保存为 excel
+
+
+//python
+import pandas as pd
+ 
+
+file_name = 'XXXX.csv'
+ 
+df = pd.read_csv(file_name, encoding='utf-8',engine='python')
+df.to_csv(file_name,encoding="utf_8_sig")
+
+ 

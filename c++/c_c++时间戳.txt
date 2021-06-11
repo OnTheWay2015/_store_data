@@ -1,0 +1,95 @@
+C++时间与字符串转换
+转自：http://blog.csdn.net/educast/article/details/17239735
+
+1、常用的时间存储方式    
+
+1）time_t类型，这本质上是一个长整数，表示从1970-01-01 00:00:00到目前计时时间的秒数，如果需要更精确一点的，可以使用timeval精确到毫秒。    
+2）tm结构，这本质上是一个结构体，里面包含了各时间字段  
+
+ 1 struct tm {  
+ 2         int tm_sec;     /* seconds after the minute - [0,59] */  
+ 3         int tm_min;     /* minutes after the hour - [0,59] */  
+ 4         int tm_hour;    /* hours since midnight - [0,23] */  
+ 5         int tm_mday;    /* day of the month - [1,31] */  
+ 6         int tm_mon;     /* months since January - [0,11] */  
+ 7         int tm_year;    /* years since 1900 */  
+ 8         int tm_wday;    /* days since Sunday - [0,6] */  
+ 9         int tm_yday;    /* days since January 1 - [0,365] */  
+10         int tm_isdst;   /* daylight savings time flag */  
+11         };  
+
+     其中tm_year表示从1900年到目前计时时间间隔多少年，如果是手动设置值的话，tm_isdst通常取值-1。   
+
+2、常用的时间函数  
+
+
+1 time_t time(time_t *t); //取得从1970年1月1日至今的秒数  
+2 char *asctime(const struct tm *tm); //将结构中的信息转换为真实世界的时间，以字符串的形式显示  
+3 char *ctime(const time_t *timep); //将timep转换为真是世界的时间，以字符串显示，它和asctime不同就在于传入的参数形式不一样  
+4 struct tm *gmtime(const time_t *timep); //将time_t表示的时间转换为没有经过时区转换的UTC时间，是一个struct tm结构指针   
+5 struct tm *localtime(const time_t *timep); //和gmtime类似，但是它是经过时区转换的时间。  
+6 time_t mktime(struct tm *tm); //将struct tm 结构的时间转换为从1970年至今的秒数  
+7 .int gettimeofday(struct timeval *tv, struct timezone *tz); //返回当前距离1970年的秒数和微妙数，后面的tz是时区，一般不用  
+8 double difftime(time_t time1, time_t time2); //返回两个时间相差的秒数  
+
+3、时间与字符串的转换  
+
+    需要包含的头文件如下 ：
+
+1 #include <iostream>  
+2 #include <time.h>  
+3 #include <stdlib.h>  
+4 #include <string.h>  
+1）unix/windows下时间转字符串参考代码  
+
+
+ 1 time_t t;  //秒时间  
+ 2 tm* local; //本地时间   
+ 3 tm* gmt;   //格林威治时间  
+ 4 char buf[128]= {0};    
+ 5 
+ 6 t = time(NULL); //获取目前秒时间  
+ 7 local = localtime(&t); //转为本地时间  
+ 8 strftime(buf, 64, "%Y-%m-%d %H:%M:%S", local);  
+ 9 std::cout << buf << std::endl;  
+10   
+11 gmt = gmtime(&t);//转为格林威治时间  
+12 strftime(buf, 64, "%Y-%m-%d %H:%M:%S", gmt);  
+13 std::cout << buf << std::endl;  
+
+2）unix字符串转时间参考代码  
+
+
+ 1 tm tm_;  
+ 2 time_t t_;  
+ 3 char buf[128]= {0};  
+ 4   
+ 5 strcpy(buf, "2012-01-01 14:00:00");  
+ 6 strptime(buf, "%Y-%m-%d %H:%M:%S", &tm_); //将字符串转换为tm时间  
+ 7 tm_.tm_isdst = -1;  
+ 8 t_  = mktime(&tm_); //将tm时间转换为秒时间  
+ 9 t_ += 3600;  //秒数加3600  
+10  
+11 tm_ = *localtime(&t_);//输出时间  
+12 strftime(buf, 64, "%Y-%m-%d %H:%M:%S", &tm_);  
+13 std::cout << buf << std::endl;  
+
+3）由于windows下没有strptime函数，所以可以使用scanf来格式化 
+
+
+ 1 time_t StringToDatetime(char *str)  
+ 2 {  
+ 3     tm tm_;  
+ 4     int year, month, day, hour, minute,second;  
+ 5     sscanf(str,"%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &minute, &second);  
+ 6     tm_.tm_year  = year-1900;  
+ 7     tm_.tm_mon   = month-1;  
+ 8     tm_.tm_mday  = day;  
+ 9     tm_.tm_hour  = hour;  
+10     tm_.tm_min   = minute;  
+11     tm_.tm_sec   = second;  
+12     tm_.tm_isdst = 0;  
+13   
+14     time_t t_ = mktime(&tm_); //已经减了8个时区  
+15     return t_; //秒时间  
+16 }  
