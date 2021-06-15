@@ -1,0 +1,3 @@
+var result = db.csmdR.find({"查询条件"})
+
+while(result.hasNext()) db.新建表名.insert(result.next())
