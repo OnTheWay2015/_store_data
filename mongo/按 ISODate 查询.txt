@@ -1,0 +1,4 @@
+db.GS_REAL_TIME_EVENT.find({EventDate:{$gte:ISODate("2021-06-20T00:00:00.000+08:00"), $lt:ISODate("2021-06-21T00:00:00.000+08:00")} })
+   .projection({})
+   .sort({_id:-1})
+   .limit(100)

@@ -1,0 +1,26 @@
+MongoDB 提供 db.collection.explain(), cursort.explain() 及 explain 命令获取查询计划及查询计划执行统计信息。
+
+explain 结果将查询计划以阶段树的形式呈现。 每个阶段将其结果（文档或索引键）传递给父节点。 叶节点访问集合或索引。 中间节点操纵由子节点产生的文档或索引键。 根节点是MongoDB从中派生结果集的最后阶段。
+
+阶段操作描述,例：
+
+COLLSCAN 集合扫描
+IXSCAN 索引扫描
+FETCH 检出文档
+SHARD_MERGE 合并分片中结果
+SHARDING_FILTER 分片中过滤掉孤立文档
+LIMIT 使用limit 限制返回数
+PROJECTION 使用 skip 进行跳过
+IDHACK 针对_id进行查询
+COUNT 利用db.coll.explain().count()之类进行count运算
+COUNTSCAN count不使用Index进行count时的stage返回
+COUNT_SCAN count使用了Index进行count时的stage返回
+SUBPLA 未使用到索引的$or查询的stage返回
+TEXT 使用全文索引进行查询时候的stage返回
+PROJECTION 限定返回字段时候stage的返回
+…
+ 
+ 
+ 
+ 
+原文链接：https://blog.csdn.net/user_longling/article/details/83957085

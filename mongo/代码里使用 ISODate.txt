@@ -1,0 +1,43 @@
+Tfield<time_t>::TFieldPtr fh = CONVERT_POINT(Tfield<time_t>, goi);				
+//ba.appendTimeT(fh->get_fieldname(), fh->get_value());
+builder.append(kvp(fh->get_fieldname(), bsoncxx::types::b_date{std::chrono::milliseconds{fh->get_value() * 1000}}));
+
+
+
+
+db.GS_REAL_TIME_EVENT.find({EventDate:{$gte:ISODate("2021-06-19T00:00:00.000+08:00"), $lt:ISODate("2021-06-21T00:00:00.000+08:00")}})
+   .projection({})
+   .sort({_id:1})
+   .limit(1000)
+   
+   
+   
+time_t curtm = time_helper::instance().get_cur_time();
+int srctp = param.getIntValue("srctp", 0);
+time_t sttm = curtm - 24 * 60 * 60;
+time_t edtm = curtm + 24 * 60 * 60;
+
+bsoncxx::builder::basic::document builder_xjty{};
+bsoncxx::builder::basic::document filter{};
+filter.append(kvp("PTP", PLATFORM_XJTY));
+filter.append(kvp("srcTP", PLATFORM_XJTY));
+
+bsoncxx::builder::basic::document filter_tm{};
+filter_tm.append(kvp("$gte", bsoncxx::types::b_date{std::chrono::milliseconds{ sttm * 1000}}));
+filter_tm.append(kvp("$lte", bsoncxx::types::b_date{std::chrono::milliseconds{ edtm * 1000}}));
+filter.append(kvp("EventDate",filter_tm.extract()));
+
+
+ 
+//打印
+auto jobj = filter.view();
+std::string xxx = bsoncxx::to_json(jobj);
+SLOG_CRITICAL << "filter:" << xxx; 
+
+//打印结果
+//2021-06-21,13:55:18.293368] <critical>: filter:{ "PTP" : 1, "srcTP" : 1, "EventDate" : { "$gte" : { "$date" : 1624168518000 }, "$lte" : { "$date" : 1624341318000 } }
+
+
+
+
+
