@@ -1,0 +1,740 @@
+用浏览器无法调试异步加载页面里包含的js文件。简单的说就是在调试工具里面看不到异步加载页面里包含的js文件
+
+需要要调试时，在chrome里 event listener breakpoints 的 Script 断点选上，在执行到动态加载的 scrpit节点时，会断点，再单步进入调试
+
+
+
+var loadFile = function (loadData, succcb, failcb) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', loadData.url, true);
+	xhr.onreadystatechange = function () {
+		if( xhr.readyState == 4 ){
+			if( xhr.status == 200 ){
+				loadData.text = xhr.response;
+				succcb( xhr );
+			}
+			else{
+				loadData.fail++;
+				if( loadData.fail<3 ){
+					xhr.open('GET', loadData.url, true);
+					setTimeout( function(){ xhr.send(); }, 500 );
+				}
+				else{
+					failcb( loadData.url );
+				}
+			}
+		}
+	};
+	xhr.send();
+};
+				
+				
+var succcb = function(){
+	var finCnt = 0;
+	var len=loadDatas.length;
+	for( var i=0; i<len; ++i ){
+		var loadData = loadDatas[i];
+		if( loadData.text ){
+			if( !loadData.fin ){
+				loadData.fin = true;
+				var s = document.createElement('script');
+				s.text = loadData.text;                       //----------------------------->创建 script 节点时用 text 内容赋值，而不是指定 src 属性
+				document.body.appendChild(s);
+			}
+			finCnt++;
+		}
+		else{
+			break;
+		}
+	}
+	
+	if( len == finCnt ){
+		callback();
+	}
+};				
+				
+ 
+	 				
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+//html 示例									
+									
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>芒果体育</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="auto" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <style>
+		html,body {
+			background:#FFFFFF;
+			margin:0 auto;
+			height: 100%;
+			width: 100%;
+			background-size:100% 100%;
+			text-align:center;
+			overflow:hidden;
+			position:fixed;
+		}
+		
+		.main{
+			position:absolute;
+			width: 500px;
+			height:50px;
+			top:97%;
+			left:50%;
+			margin-left:-200px;
+			margin-top:-25px;
+		}
+		.inner{
+			height: 3px;
+			width: 0;
+			background: #D0E810;
+			position: relative;
+			top:10px;
+			left: 5px;
+			border-radius: 2px;
+			overflow: hidden;
+		}
+		.line{
+			position: relative;
+			left: 5px;
+			top: 14px;
+			width: 0px;
+			border-top: 3px dashed #fff;
+		}
+		.data{
+			color:#000000;
+			height: 24px;
+			width:390px;
+			/*border: 1px solid;*/
+			position: absolute;
+			/*left: 6px;
+			top: 545px;*/
+			text-align: center;
+		}
+	</style>
+	<div class="main" id="loadingDiv">
+		<div class="data"></div>
+		<font color="#000000" style="text-align:center;" >.</font>			
+		<div class="line"></div>
+		<div class="inner">
+		</div>
+	</div>	
+	<script type="text/javascript">
+		// 新加类型判断
+		var urlType=0;
+		window.onload= function(){
+			urlType = getUrlParam("type");
+			if(urlType != null){
+				if (urlType == 1) {// 使用原index 模板 移除type2模板
+					document.getElementById("type2").remove();
+					typeIndex(); //执行原index script
+				}else if (urlType == 2){// 使用原indexPlat 模板 移除index模板
+					document.getElementById("type1").remove();
+					typeIndexPlat(); //执行原indexPlat script
+				}
+			}else{
+				// 为空默认执行 原index 模板 移除type2模板
+				document.getElementById("type1").remove();
+				typeIndexPlat(); //为空默认执行原index script
+			}
+			
+		}
+		// 过滤URL参数
+		function getUrlParam(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]);
+			return null;
+		}
+		// 新加类型判断end
+		// 自动跳转
+		var os = function () {
+			var ua = navigator.userAgent,
+				isWindowsPhone = /(?:Windows Phone)/.test(ua),
+				isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone,
+				isAndroid = /(?:Android)/.test(ua),
+				isFireFox = /(?:Firefox)/.test(ua),
+				isChrome = /(?:Chrome|CriOS)/.test(ua),
+				isTablet = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua)),
+				isPhone = /(?:iPhone)/.test(ua) && !isTablet,
+				isPc = !isPhone && !isAndroid && !isSymbian;
+			return {
+				isTablet: isTablet,
+				isPhone: isPhone,
+				isAndroid: isAndroid,
+				isPc: isPc,
+				isMobile: isPhone || isAndroid
+			};
+		}();
+
+		searchUrl = location.search.substr(1);
+		if (searchUrl) {
+			searchUrl = "?" + searchUrl
+		}
+
+		urlHasPc = /(\/pc\/)/.test(window.location.href);
+		urlHasMobile = /(\/mobile\/)/.test(window.location.href);
+		if (!urlHasPc && !urlHasMobile) {
+			if(os.isPc) {
+				location.href = "/pc/" + searchUrl
+			} else if(os.isMobile){
+				location.href = "/mobile/" + searchUrl
+			}
+		}
+
+		if (os.isPc && urlHasMobile)  {
+			location.href = "/pc/" + searchUrl
+		}
+
+		if (os.isMobile && urlHasPc)  {
+			location.href = "/mobile/" + searchUrl
+		}
+
+		var _width =0;
+		var timer;
+		var changewordtime = Math.round(Math.random()*10)*200;
+
+		timer = setInterval(function(){
+		_width +=2;
+		changewordtime += 4
+
+		var o=document.getElementById("loadingDiv")
+
+		if (o===null) {
+		clearInterval(timer);
+		}
+		else{
+
+		if(_width>150){
+		_width -=1.5;
+		}
+		if(_width>400){
+		_width -=0.3;
+		}
+		if(_width>480){
+		_width -=0.2;
+		}
+		if(_width>=490){
+		clearInterval(timer);
+		}
+
+		document.getElementsByClassName("inner")[0].style.width=_width+"px";
+		var _data = Math.floor((_width/490)*100);
+		/* document.getElementsByClassName("data")[0].innerText = "加载游戏中，请稍候...["+_data+"%]";
+		*/
+
+		if (changewordtime > 0){
+		document.getElementsByClassName("data")[0].innerText ="正在加载引擎，请耐心等候，加载进度："+_data+"%";
+		}
+		if (changewordtime > 2200){
+		changewordtime = 0
+		}
+		}
+		},100);
+	</script>
+</head>
+
+<body style="overflow:hidden" >
+	<!-- 类型=1 type1 原index-->
+	<div style="margin: auto;width: 100%;height: 100%" id="type1" >
+		<div style="margin: auto;width: 100%;height: 100%" class="egret-player"
+			data-entry-class="Main"
+			data-orientation="landscape"
+			data-scale-mode="fixedNarrow"
+			data-frame-rate="30"
+			data-content-width="1280"
+			data-content-height="720"
+			data-multi-fingered="2"
+			data-show-fps="false" data-show-log="false"
+			data-show-fps-style="x:0,y:0,size:12,textColor:0xffffff,bgAlpha:0.9">
+		</div>
+		<script>
+			function typeIndex() {
+				// console.log("index----类型",urlType)
+				var loadScript = function (list, callback) {
+					var loadDatas = [];
+					var succcb = function(){
+						var finCnt = 0;
+						var len=loadDatas.length;
+						for( var i=0; i<len; ++i ){
+							var loadData = loadDatas[i];
+							if( loadData.text ){
+								if( !loadData.fin ){
+									loadData.fin = true;
+									var s = document.createElement('script');
+									s.text = loadData.text;
+									document.body.appendChild(s);
+								}
+								finCnt++;
+							}
+							else{
+								break;
+							}
+						}
+						
+						if( len == finCnt ){
+							callback();
+						}
+					};
+					
+					var failcb = function( fileNm ){
+						alert( "游戏加载失败,点击'确定'重试!"+"\n\n(加载"+fileNm+"失败)" );
+						location.reload();
+					};
+					
+					for( var i=0, len=list.length; i<len; ++i ){
+						var loadData = {url:list[i],fail:0};
+						loadDatas.push( loadData );
+						loadFile( loadData, succcb, failcb );
+					}
+				};
+
+				var loadFile = function (loadData, succcb, failcb) {
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', loadData.url, true);
+					xhr.onreadystatechange = function () {
+						if( xhr.readyState == 4 ){
+							if( xhr.status == 200 ){
+								loadData.text = xhr.response;
+								succcb( xhr );
+							}
+							else{
+								loadData.fail++;
+								if( loadData.fail<3 ){
+									xhr.open('GET', loadData.url, true);
+									setTimeout( function(){ xhr.send(); }, 500 );
+								}
+								else{
+									failcb( loadData.url );
+								}
+							}
+						}
+					};
+					xhr.send();
+				};
+				
+				if( !console.memory ){
+					console = {};
+					console.log = console.warn = console.info = function(){};
+				}
+				
+				var handerNativeEvt;
+				var nativeInterface;
+				loadFile( {url:'./manifest.json?v=' + Date.now(),fail:0}, function( xhr ){
+						var manifest = JSON.parse(xhr.response);
+						
+						var startGame = function(){
+							CONF.svrUrl = "https://www.longyuanxm.com";
+							CONF.webSvrUrl = "https://www.jy857h.com";
+							CONF.logUrl = "https://www.jy857j.com/sumer/";
+							CONF.gameVer = manifest.gVer;
+							var loadEgt = function(){
+								egret.ImageLoader.crossOrigin = "anonymous";
+								egret.runEgret({ renderMode: "webgl", audioType: 2, calculateCanvasScaleFactor:function(context) {
+										var backingStore = context.backingStorePixelRatio ||
+										context.webkitBackingStorePixelRatio ||
+										context.mozBackingStorePixelRatio ||
+										context.msBackingStorePixelRatio ||
+										context.oBackingStorePixelRatio ||
+										context.backingStorePixelRatio || 1;
+										return (window.devicePixelRatio || 1) / backingStore;
+									}});
+							};
+							var nativeInterface = (window).nativeInterface;
+							var nativeBridge = (window).nativeBridge;
+							var isNative = !!(nativeInterface || nativeBridge);
+							if(!isNative){
+								var params = URLUtil.getLocationParams();
+								var errcnt = 0;
+								var loadSkin = function(){
+										game.HttpUtil.channelCfgInfo({agentId:params.agentId,channelId:params.channelId || CONF.channelId}, false, function (data) {
+										if (data && data.ret && data.resData) {
+											var resData = JSON.parse(data.resData);
+											var resAll = resData.ResAll;
+											if(resAll){
+												CONF.resHome = resAll + "/";
+												CONF.res.all = game.GameUtil.getAllVer( resAll );
+											}
+											var resHall = resData.ResHall;
+											if(resHall){
+												CONF.res["hall"]= resHall;
+											}
+											var resLogin = resData.ResLogin;
+											if(resLogin){ 
+												CONF.res["login"]= resLogin;
+											}
+
+											var tileNm = resData.PackageName;
+											if(tileNm){ 
+												document.title = tileNm;
+											}
+											var agentId = data.agentId;
+											if(agentId){
+												CONF.agentId = agentId;
+											}
+
+											game.GameUtil.loadParam(loadEgt);    
+										}else{
+											if(errcnt < 3){
+												loadSkin();
+												errcnt ++ ;
+											}else{
+												alert( "游戏加载失败,点击'确定'重试!"+"\n\n(加载皮肤数据失败)" );
+												location.reload();
+											}
+										}
+									}, self);
+								} 
+								loadSkin();
+							}else{
+								game.GameUtil.loadParam(loadEgt);
+							}
+						};
+						
+						if( !!nativeInterface && !!nativeInterface.startUpdateMain ){
+							var paramStr = JSON.stringify( {nm:'client', ver:manifest.gVer, zip:manifest.zip} );
+							handerNativeEvt = function( evtNm, argsStr ){
+								if( evtNm == "update_main_finish" ){
+									var args = JSON.parse( argsStr );
+									if( args.fin != 0 ){
+										if( confirm( "游戏加载失败,点击'确定'重试!"+"\n\n(更新游戏模块err=" + args.fin + ", name=" + args.arg1 + "失败)" ) ){
+											nativeInterface.startUpdateMain( paramStr );
+										}
+										else{
+											loadScript( manifest.js, startGame );
+										}
+									}
+									else{
+										loadScript( manifest.js, startGame );
+									}
+								}
+							}
+				
+							nativeInterface.startUpdateMain( paramStr );
+						}
+						else{
+							loadScript( manifest.js, startGame );
+						}	
+					},
+					function(){
+						alert( "游戏加载失败,点击'确定'重试!"+"\n\n(加载manifest.json失败)" );
+						location.reload();
+					});
+			}
+		</script>
+	</div>
+	<!-- 类型=2 type2 原indexPlat-->
+	<div style="margin: auto;width: 100%;height: 100%" id="type2" >
+		<div style="margin: auto;width: 100%;height: 100%" class="egret-player"
+			data-entry-class="Main"
+			data-orientation="portrait"
+			data-scale-mode="fixedWidth"
+			data-frame-rate="30"
+			data-content-width="1500"
+			data-content-height="2668"
+			data-multi-fingered="2"
+			data-show-fps="false" data-show-log="false"
+			data-show-fps-style="x:0,y:0,size:12,textColor:0xffffff,bgAlpha:0.9">
+		</div>
+		
+		<script>
+			function typeIndexPlat() {
+				var oBody = document.querySelector("body");
+				oBody.style.cssText = "background:#000 no-repeat center 0px;background-size: cover;";
+				// console.log("indexPlat----类型",urlType)
+				var loadScript = function (list, callback) {
+					var loadDatas = [];
+					var succcb = function(){
+						var finCnt = 0;
+						var len=loadDatas.length;
+						for( var i=0; i<len; ++i ){
+							var loadData = loadDatas[i];
+							if( loadData.text ){
+								if( !loadData.fin ){
+									loadData.fin = true;
+									var s = document.createElement('script');
+									s.text = loadData.text;
+									document.body.appendChild(s);
+								}
+								finCnt++;
+							}
+							else{
+								break;
+							}
+						}
+						
+						if( len == finCnt ){
+							callback();
+						}
+					};
+					
+					var failcb = function( fileNm ){
+						alert( "游戏加载失败,点击'确定'重试!"+"\n\n(加载"+fileNm+"失败)" );
+						location.reload();
+					};
+					
+					for( var i=0, len=list.length; i<len; ++i ){
+						var loadData = {url:list[i],fail:0};
+						loadDatas.push( loadData );
+						loadFile( loadData, succcb, failcb );
+					}
+				};
+			
+				var loadFile = function (loadData, succcb, failcb) {
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', loadData.url, true);
+					xhr.onreadystatechange = function () {
+						if( xhr.readyState == 4 ){
+							if( xhr.status == 200 ){
+								loadData.text = xhr.response;
+								succcb( xhr );
+							}
+							else{
+								loadData.fail++;
+								if( loadData.fail<3 ){
+									xhr.open('GET', loadData.url, true);
+									setTimeout( function(){ xhr.send(); }, 500 );
+								}
+								else{
+									failcb( loadData.url );
+								}
+							}
+						}
+					};
+					xhr.send();
+				};
+				
+				if( !console.memory ){
+					console = {};
+					console.log = console.warn = console.info = function(){};
+				}
+				
+				var handerNativeEvt;
+				var nativeInterface;
+				loadFile( {url:'./manifest1.json?v=' + Date.now(),fail:0}, function( xhr ){
+						var manifest = JSON.parse(xhr.response);
+						var startGame = function(){
+							CONF.svrUrl = "https://www.cheneyseptic.com";
+							CONF.webSvrUrl = "https://www.jy857h.com";
+							CONF.logUrl = "https://www.jy857j.com/sumer/";
+							CONF.kefuSign = "3C3831AD16D3A32AD8E26CEB505DB57D";
+							CONF.gameVer = manifest.gVer;
+							var loadEgt = function(){
+								egret.ImageLoader.crossOrigin = "anonymous";
+								egret.runEgret({ renderMode: "webgl", audioType: 2, calculateCanvasScaleFactor:function(context) {
+										var backingStore = context.backingStorePixelRatio ||
+										context.webkitBackingStorePixelRatio ||
+										context.mozBackingStorePixelRatio ||
+										context.msBackingStorePixelRatio ||
+										context.oBackingStorePixelRatio ||
+										context.backingStorePixelRatio || 1;
+										return (window.devicePixelRatio || 1) / backingStore;
+									}});
+							};
+							var nativeInterface = (window).nativeInterface;
+							var nativeBridge = (window).nativeBridge;
+							var isNative = !!(nativeInterface || nativeBridge);
+							if(!isNative){
+								var params = URLUtil.getLocationParams();
+								var errcnt = 0;
+								var loadSkin = function(){
+									if(!params.channelId){
+										var host =  window.location.host;
+										game.HttpUtil.getH5Domain({domainNm: host}, false, function (data) {
+											if(data && data.ret){
+												var agentId = data.agentId;
+												if(agentId){
+													CONF.agentId = agentId;
+												}
+												var bindChannel = data.bindChannel;
+												if(bindChannel){
+													CONF.channelId = bindChannel;
+													game.HttpUtil.channelCfgInfo({agentId:params.agentId,channelId:bindChannel}, false, function (data) {
+													if (data && data.ret && data.resData) {
+														var resData = JSON.parse(data.resData);
+														var resAll = resData.ResAll;
+														//if(URLUtil.isPc()){
+														//	let tmpAll = resAll.split("resource");
+														//	resAll = "resource" + (parseInt(tmpAll[1])+ 1);
+														//}
+														if(resAll){
+															CONF.resHome = resAll + "/";
+															CONF.res.all = game.GameUtil.getAllVer( resAll );
+														}
+														var resHall = resData.ResHall;
+														
+														//if(URLUtil.isPc()){
+														//	let tmpHall = resHall.split("hall");
+														//	resHall = "hall" + (parseInt(tmpHall[1]) + 1);
+														//}
+														
+														if(resHall){
+															CONF.res["hall"]= resHall;
+														}
+														var resLogin = resData.ResLogin;
+														if(resLogin){ 
+															CONF.res["login"]= resLogin;
+														}
+														
+														var resLogo = resData.ResLogo;
+														if(resLogo){ 
+															CONF.res["logo"]= resLogo;
+														}
+						
+														var tileNm = resData.PackageName;
+														if(tileNm){ 
+															document.title = tileNm;
+														}
+														var agentId = data.agentId;
+														if(agentId){
+															CONF.agentId = agentId;
+														}
+						
+														game.GameUtil.loadParam(loadEgt);    
+													}else{
+														if(errcnt < 3){
+															loadSkin();
+															errcnt ++ ;
+														}else{
+															alert( "游戏加载失败,点击'确定'重试!"+"\n\n(加载皮肤数据失败)" );
+															location.reload();
+														}
+													}
+												}, self);
+												}else{
+													//window.location="https://www.baidu.com"
+												}
+												
+											}
+										},game.HttpUtil);
+									}else{
+										game.HttpUtil.channelCfgInfo({agentId:params.agentId,channelId:params.channelId || CONF.channelId}, false, function (data) {
+											if (data && data.ret && data.resData) {
+												var resData = JSON.parse(data.resData);
+												var resAll = resData.ResAll;
+												//if(URLUtil.isPc()){
+												//	let tmpAll = resAll.split("resource");
+												//	resAll = "resource" + (parseInt(tmpAll[1])+ 1);
+												//}
+												if(resAll){
+													CONF.resHome = resAll + "/";
+													CONF.res.all = game.GameUtil.getAllVer( resAll );
+												}
+												var resHall = resData.ResHall;
+												
+												//if(URLUtil.isPc()){
+												//	let tmpHall = resHall.split("hall");
+												//	resHall = "hall" + (parseInt(tmpHall[1]) + 1);
+												//}
+												
+												if(resHall){
+													CONF.res["hall"]= resHall;
+												}
+												var resLogin = resData.ResLogin;
+												if(resLogin){ 
+													CONF.res["login"]= resLogin;
+												}
+												
+												var resLogo = resData.ResLogo;
+												if(resLogo){ 
+													CONF.res["logo"]= resLogo;
+												}
+				
+												var tileNm = resData.PackageName;
+												if(tileNm){ 
+													document.title = tileNm;
+												}
+												var agentId = data.agentId;
+												if(agentId){
+													CONF.agentId = agentId;
+												}
+				
+												game.GameUtil.loadParam(loadEgt);    
+											}else{
+												if(errcnt < 3){
+													loadSkin();
+													errcnt ++ ;
+												}else{
+													alert( "游戏加载失败,点击'确定'重试!"+"\n\n(加载皮肤数据失败)" );
+													location.reload();
+												}
+											}
+										}, self);
+									}
+									
+								} 
+								loadSkin();
+							}else{
+								game.GameUtil.loadParam(loadEgt);
+							}
+						};
+						
+						if( !!nativeInterface && !!nativeInterface.startUpdateMain ){
+							var paramStr = JSON.stringify( {nm:'client1', ver:manifest.gVer, zip:manifest.zip} );
+							handerNativeEvt = function( evtNm, argsStr ){
+								if( evtNm == "update_main_finish" ){
+									var args = JSON.parse( argsStr );
+									if( args.fin != 0 ){
+										if( confirm( "游戏加载失败,点击'确定'重试!"+"\n\n(更新游戏模块err=" + args.fin + ", name=" + args.arg1 + "失败)" ) ){
+											nativeInterface.startUpdateMain( paramStr );
+										}
+										else{
+											loadScript( manifest.js, startGame );
+										}
+									}
+									else{
+										loadScript( manifest.js, startGame );
+									}
+								}
+							}
+				
+							nativeInterface.startUpdateMain( paramStr );
+						}
+						else{
+							loadScript( manifest.js, startGame );
+						}	
+					},
+					function(){
+						alert( "游戏加载失败,点击'确定'重试!"+"\n\n(加载manifest1.json失败)" );
+						location.reload();
+					});
+			}
+		</script>
+		
+	</div>
+</body>
+
+</html>
+

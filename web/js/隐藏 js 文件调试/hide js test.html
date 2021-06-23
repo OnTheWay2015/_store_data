@@ -1,0 +1,84 @@
+									
+<!DOCTYPE HTML>
+<html>
+
+<head>
+</head>
+<body>
+    	<div> test
+
+		<script>
+				var loadDatas = [];
+				var loadFile = function (loadData, succcb, failcb) {
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', loadData.url, true);
+					xhr.onreadystatechange = function () {
+						if( xhr.readyState == 4 ){
+							if( xhr.status == 200 ){
+								loadData.text = xhr.response;
+								succcb( xhr );
+							}
+							else{
+								loadData.fail++;
+								if( loadData.fail<3 ){
+									xhr.open('GET', loadData.url, true);
+									setTimeout( function(){ xhr.send(); }, 500 );
+								}
+								else{
+									failcb( loadData.url );
+								}
+							}
+						}
+					};
+					xhr.send();
+				};
+				
+				var succcb = function(){
+						var finCnt = 0;
+						var len=loadDatas.length;
+						for( var i=0; i<len; ++i ){
+							var loadData = loadDatas[i];
+							if( loadData.text ){
+								if( !loadData.fin ){
+									loadData.fin = true;
+									var s = document.createElement('script');
+									s.text = loadData.text;                       //----------------------------->创建 script 节点时用 text 内容赋值，而不是指定 src 属性
+									document.body.appendChild(s);
+								}
+								finCnt++;
+							}
+							else{
+								break;
+							}
+						}
+						
+						if( len == finCnt ){
+							console.log("test ok!")
+						}
+				};				
+				var failcb = function( fileNm ){
+					alert( " 加载"+fileNm+"失败 " );
+					//location.reload();
+				};
+		
+		
+			var loadData = {url:"test.js",fail:0}; 
+			loadDatas.push( loadData );
+			loadFile( loadData, succcb, failcb );
+		
+		</script>
+		
+	</div>
+</body>
+
+</html>
+
+
+
+
+				
+				
+			
+ 
+ 
+ 
