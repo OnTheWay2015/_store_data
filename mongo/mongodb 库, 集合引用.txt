@@ -1,0 +1,9 @@
+
+use COLLECT_INFOS		//COLLECT_INFOS 库名
+db.GS_VEDIO.drop()    // db 是一个全局变量，存储当前的数据名称，当切换数据库时会自动更改db的值.  GS_VEDIO 集合名
+
+//db.createCollection("collName", {size: 20, capped: 5, max: 100});//创建成功会显示{"ok":1}
+var ccc = db.getCollection("GS_VEDIO");
+ccc.insert([{a:123}])
+
+ccc.drop()// 删除集合

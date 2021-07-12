@@ -1,0 +1,18 @@
+
+use LogDB_DWC
+
+var coll = db.getCollection("LogXjty");
+var colle = db.getCollection("LogXjty__");
+
+var filter = {CreateTime:{$gt:ISODate("2021-06-27T23:00:00.000+08:00")}};
+var cursor = coll.find(filter);
+
+while(cursor.hasNext()) {
+   
+	var r = cursor.next();
+ 
+	colle.insert(r);
+}
+
+
+

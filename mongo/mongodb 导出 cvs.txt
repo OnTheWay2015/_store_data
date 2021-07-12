@@ -1,0 +1,12 @@
+MongoDB中的数据导出为 excel CSV 文件
+1、打开命令行，进入我们所安装的mongodb路径下的bin文件夹
+
+2、我们采用bin文件夹下的 mongoexport 方法进行导出， 
+
+1
+mongoexport -d myDB -c user -f _id,name,password,adress --csv -o ./user.csv
+
+ -d  标示 数据库  
+ -c   标示  数据表  
+ -f   需要提取的field用逗号分隔  
+ -o  输出路径  

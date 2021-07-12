@@ -1,0 +1,7 @@
+
+//不为空
+db.getCollection("xttblog").find({type:{$ne:null}})  
+
+//为空
+db.getCollection('xttblog').find({type:null]})
+db.getCollection('xttblog').find({type:{$in:[null]}})

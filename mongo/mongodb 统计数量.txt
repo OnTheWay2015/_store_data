@@ -1,0 +1,36 @@
+方法count()用于统计结果集中文档条数
+语法：
+
+db.集合名称.find({条件}).count()
+1
+也可以与为
+
+db.集合名称.count({条件})
+1
+例1：统计男生人数
+
+db.stu.find({gender:1}).count()
+1
+例2：统计年龄大于20的男生人数
+
+db.stu.count({age:{$gt:20},gender:1})
+
+
+
+db.icons_team_export.count()
+
+
+
+
+
+
+
+
+//聚合
+//以 TeamCust 归类合并,并统计重复的数量
+db.Team_XJTY.aggregate([
+     {$project:{"TeamName":1 } },
+     {$group:{_id:"$TeamName", count: { $sum: 1 } }  }
+ 
+])
+

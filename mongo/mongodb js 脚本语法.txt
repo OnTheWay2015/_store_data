@@ -1,0 +1,141 @@
+https://www.runoob.com/mongodb/mongodb-database-references.html
+
+==========================================================================
+
+use COLLECT_INFOS
+db.TEXT_ABC.drop()    // db 是一个全局变量，存储当前的数据名称，当切换数据库时会自动更改db的值
+
+//db.createCollection("TEXT_ABC") ;
+
+var cursor = db.GS_TEAM_ICON_MATCH.find({})
+.projection({SportIdCust:1,PTP:1,TeamCust:1,TeamCustEn:1,ImgDirUse:1,srcTP:1})
+.sort({SportIdCust:1});
+
+var mm = [];
+while(cursor.hasNext()) {
+    var r = cursor.next();
+    if (r.srcTP != 3)
+    {
+        continue;
+    }
+    //print(r);
+    mm.push(r);
+    
+}
+
+    
+if (mm.length >0)
+{
+
+//print(mm[0]);
+//db.export_.insert({a:123}}) ;
+    for (var i=0;i<mm.length;i++)
+    {
+       db.TEXT_ABC.insert(mm[i]) ;
+ 
+    }
+
+}
+else
+{
+    print("insert process length 0"); 
+}
+
+
+
+db.getCollection("account");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==========================================================================
+//打印 
+var conn = new Mongo();
+db = conn.getDB("COLLECT_INFOS");  //选择数据库。。。    db 是一个默认变量,不需要加 var声明,否则可能会有报错
+//db.auth("user-name","password");  //用户验证
+var cursor = db.GS_VEDIO_WEB.find();
+
+while(cursor.hasNext()) {
+    var r = cursor.next();
+    print(r);
+	//print(r["_id"] + "\t" + r["value"]);
+    break; //只打印一个
+}
+
+
+
+
+
+
+
+
+==========================================================================
+var conn = new Mongo();
+var db = conn.getDB("db-name");  //选择数据库
+db.auth("user-name","password");  //用户验证
+var map = function() {
+    split_result = this.sentence.split(" ");
+    for (var i in split_result) {
+        var word = split_result[i].replace(/(^\s*)|(\s*$)/g,"").toLowerCase(); //去除了单词两边可能的空格，并将单词转换为小写
+        if (word.length != 0) {
+            emit(word, 1);
+        }
+    }
+}
+
+var reduce = function(key, values) {
+    print(key+":"+Array.sum(values));
+    return Array.sum(values);
+}
+
+db.data.mapReduce(
+    map,
+    reduce,
+    {out:{merge:"mr_result"}}
+)
+
+==========================================================================
+保存为test01.js，在终端中运行：
+$ mongo test01.js
+
+运行结束后可以在集合 mr_result 中查看 mapreduce 结果。
+
+==========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+==========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
