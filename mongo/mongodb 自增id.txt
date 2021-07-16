@@ -1,0 +1,17 @@
+Mongo中也是可以去字段进行自增的，以下是封装的一个获取自增id的方法，用的是Mongo的command命令实现的。
+	
+function getNextSequenceValue(sequenceName){
+   var sequenceDocument = db._ids.findAndModify(   // 创建一个表 _ids ,在里边创建条目, 保存自增id当前值.   _ids => {_id,条目名称,每种自增id定义一个唯一名称}  
+      {
+         query:{_id: sequenceName }, //_id条目名称, sequenceName 当前需要创建的条目名称
+         update: {$inc:{sequence_value:1}}, //id值自增
+         "upsert":true,  //若是第一次创建，upsert一定要写上，否则，不会出现自增id
+         "new":true
+      });
+   return sequenceDocument.sequence_value;
+}
+ 
+var $id = getNextSequenceValue("cid");
+print($id)
+
+
